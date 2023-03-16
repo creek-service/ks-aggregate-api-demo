@@ -16,19 +16,19 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams;
 
-import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetTextStream;
 import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetHandleUsageStream;
+import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetTextStream;
+import static org.apache.kafka.streams.KeyValue.pair;
 import static org.creekservice.api.kafka.metadata.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
 import static org.creekservice.api.kafka.streams.test.TestTopics.inputTopic;
 import static org.creekservice.api.kafka.streams.test.TestTopics.outputTopic;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.apache.kafka.streams.KeyValue.pair;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 
+import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
-import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtension;
@@ -82,14 +82,15 @@ class TopologyBuilderTest {
     @Test
     void shouldOutputHandleOccurrences() {
         // When:
-        tweetTextStream.pipeInput(1622262145390972929L, "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, " +
-                "Twitter will enable a light, write-only API for bots providing good content that is free.");
+        tweetTextStream.pipeInput(
+                1622262145390972929L,
+                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, "
+                        + "Twitter will enable a light, write-only API for bots providing good content that is free.");
 
         // Then:
-        assertThat(handleUsageStream.readKeyValuesToList(), containsInAnyOrder(
-                pair("@PepitoTheCat", 2),
-                pair("@BillyM2k", 1)
-        ));
+        assertThat(
+                handleUsageStream.readKeyValuesToList(),
+                containsInAnyOrder(pair("@PepitoTheCat", 2), pair("@BillyM2k", 1)));
     }
 
     /**

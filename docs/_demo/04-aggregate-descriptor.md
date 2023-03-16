@@ -29,7 +29,7 @@ Copy the `TweetHandleUsageStream` declaration from the `HandleOccurrenceServiceD
 descriptor. It should look like the following, though the class name may vary.
 
 {% highlight java %}
-{% include_snippet all from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/KsAggregateApiDemoAggregateDescriptor.java %}
+{% include_snippet topic-resources from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/KsAggregateApiDemoAggregateDescriptor.java %}
     ...
 }
 {% endhighlight %}
