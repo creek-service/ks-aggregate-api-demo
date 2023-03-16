@@ -2,29 +2,17 @@
   children:
     - title: "Introduction"
       url: /
-#    - title: "Bootstrap a new repository"
-#      url: /bootstrap
-#    - title: "Add a microservice"
-#      url: /add-service
-#- title: "Write the code"
-#  children:
-#    - title: "Service descriptor"
-#      url: /descriptor
-#    - title: "Business logic"
-#      url: /business-logic
-#- title: Testing
-#  children:
-#    - title: "System tests"
-#      url: /system-testing
-#    - title: "Code coverage"
-#      url: /system-testing-coverage
-#    - title: "Unit tests"
-#      url: /unit-testing
-#    - title: "Debugging"
-#      url: /debugging
-#- title: Next steps
-#  children:
-#    - title: "Deployment"
-#      url: /deployment
-#    - title: "Further reading"
-#      url: /further-reading
+    - title: "Bootstrap a new repository"
+      url: /bootstrap
+- title: "Write the code"
+  children:
+    - title: "Aggregate descriptor"
+      url: /descriptor
+- title: Next steps
+  children:
+    - title: "Publishing the api"
+      url: /publish-api
+    - title: "Managing API changes"
+      url: /managing-api-changes
+    - title: "Further reading"
+      url: /further-reading
