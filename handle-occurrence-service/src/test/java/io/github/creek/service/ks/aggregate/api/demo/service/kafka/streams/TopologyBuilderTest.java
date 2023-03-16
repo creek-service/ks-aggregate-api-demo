@@ -16,7 +16,6 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams;
 
-// formatting:off
 import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetTextStream;
 import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetHandleUsageStream;
 import static org.creekservice.api.kafka.metadata.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
@@ -24,13 +23,11 @@ import static org.creekservice.api.kafka.streams.test.TestTopics.inputTopic;
 import static org.creekservice.api.kafka.streams.test.TestTopics.outputTopic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-// begin-snippet: includes
 import static org.apache.kafka.streams.KeyValue.pair;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
-// end-snippet
 import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
@@ -43,22 +40,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-// formatting:on
 
-// begin-snippet: class-declaration
 class TopologyBuilderTest {
-    // end-snippet
 
     private static CreekContext ctx;
 
     private TopologyTestDriver testDriver;
     private Topology topology;
-    // formatting:off
-// begin-snippet: topic-declarations
     private TestInputTopic<Long, String> tweetTextStream;
     private TestOutputTopic<String, Integer> handleUsageStream;
-// end-snippet
-    // formatting:on
 
     @BeforeAll
     public static void classSetup() {
@@ -69,8 +59,6 @@ class TopologyBuilderTest {
                         .build();
     }
 
-    // formatting:off
-// begin-snippet: setUp
     @BeforeEach
     public void setUp() {
         final KafkaStreamsExtension ext = ctx.extension(KafkaStreamsExtension.class);
@@ -85,16 +73,12 @@ class TopologyBuilderTest {
         tweetTextStream = inputTopic(TweetTextStream, ctx, testDriver);
         handleUsageStream = outputTopic(TweetHandleUsageStream, ctx, testDriver);
     }
-// end-snippet
-    // formatting:on
 
     @AfterEach
     public void tearDown() {
         testDriver.close();
     }
 
-    // formatting:off
-// begin-snippet: unit-test
     @Test
     void shouldOutputHandleOccurrences() {
         // When:
@@ -107,8 +91,6 @@ class TopologyBuilderTest {
                 pair("@BillyM2k", 1)
         ));
     }
-// end-snippet
-    // formatting:on
 
     /**
      * A test that intentionally fails when ever the topology changes.

@@ -19,11 +19,26 @@ package io.github.creek.service.ks.aggregate.api.demo.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.creekservice.api.kafka.metadata.OwnedKafkaTopicOutput;
 import org.creekservice.api.platform.metadata.AggregateDescriptor;
 import org.creekservice.api.platform.metadata.ComponentInput;
 import org.creekservice.api.platform.metadata.ComponentOutput;
+import org.creekservice.api.platform.metadata.OwnedResource;
 
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicConfigBuilder.withPartitions;
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
+
+// begin-snippet: all
 public final class KsAggregateApiDemoAggregateDescriptor implements AggregateDescriptor {
+
+    public static final OwnedKafkaTopicOutput<String, Integer> TweetHandleUsageStream =
+            register(outputTopic(
+                    "twitter.handle.usage",
+                    String.class, // Twitter handle
+                    Integer.class,  // Usage count
+                    withPartitions(6)));
+// end-snippet
 
     private static final List<ComponentInput> INPUTS = new ArrayList<>();
     private static final List<ComponentOutput> OUTPUTS = new ArrayList<>();
@@ -41,12 +56,12 @@ public final class KsAggregateApiDemoAggregateDescriptor implements AggregateDes
     }
 
     // Uncomment if needed
-    // private static <T extends ComponentInput> T register(final T input) {
+    // private static <T extends ComponentInput & OwnedResource> T register(final T input) {
     //     INPUTS.add(input);
     //     return input;
     // }
 
-    private static <T extends ComponentOutput> T register(final T output) {
+    private static <T extends ComponentOutput & OwnedResource> T register(final T output) {
         OUTPUTS.add(output);
         return output;
     }

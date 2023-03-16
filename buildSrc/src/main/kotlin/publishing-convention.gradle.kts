@@ -33,6 +33,7 @@ java {
     withSourcesJar()
 }
 
+// begin-snippet: gh-packages
 publishing {
     repositories {
         // ChangeMe: will publish to GitHub package:
@@ -55,3 +56,4 @@ publishing {
         }
     }
 }
+// end-snippet
