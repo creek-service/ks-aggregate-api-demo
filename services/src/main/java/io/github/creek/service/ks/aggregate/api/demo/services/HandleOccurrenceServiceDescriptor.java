@@ -16,40 +16,41 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.services;
 
-import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicConfigBuilder.withPartitions;
-import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.inputTopic;
-
-import io.github.creek.service.ks.aggregate.api.demo.api.KsAggregateApiDemoAggregateDescriptor;
+import io.github.creek.service.ks.aggregate.api.demo.api.OccurrenceAggregateDescriptor;
+import io.github.creek.service.ks.aggregate.api.demo.services.external.IngestionAggregateDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.creekservice.api.kafka.metadata.OwnedKafkaTopicInput;
+import org.creekservice.api.kafka.metadata.KafkaTopicInput;
 import org.creekservice.api.kafka.metadata.OwnedKafkaTopicOutput;
 import org.creekservice.api.platform.metadata.ComponentInput;
 import org.creekservice.api.platform.metadata.ComponentInternal;
 import org.creekservice.api.platform.metadata.ComponentOutput;
 import org.creekservice.api.platform.metadata.ServiceDescriptor;
 
-// begin-snippet: topic-resources
+// begin-snippet: class-name
 public final class HandleOccurrenceServiceDescriptor implements ServiceDescriptor {
+    // end-snippet
 
     private static final List<ComponentInput> INPUTS = new ArrayList<>();
     private static final List<ComponentInternal> INTERNALS = new ArrayList<>();
     private static final List<ComponentOutput> OUTPUTS = new ArrayList<>();
 
-    // Define the output topic, again conceptually owned by this service:
-    public static final OwnedKafkaTopicOutput<String, Integer> TweetHandleUsageStream =
-            register(KsAggregateApiDemoAggregateDescriptor.TweetHandleUsageStream);
+    // formatting:off
+// begin-snippet: input-topic-resources
+    // Define the tweet-text input topic, managed by the ingestion aggregate:
+    public static final KafkaTopicInput<Long, String> TweetTextStream =
+            register(IngestionAggregateDescriptor.TweetTextStream.toInput());
     // end-snippet
+// formatting:on
 
-    // Define the tweet-text input topic, conceptually owned by this service:
-    public static final OwnedKafkaTopicInput<Long, String> TweetTextStream =
-            register(
-                    inputTopic(
-                            "twitter.tweet.text", // Topic name
-                            Long.class, // Topic key type (Tweet id)
-                            String.class, // Topic value type (Tweet text)
-                            withPartitions(5))); // Topic config
+    // formatting:off
+// begin-snippet: output-topic-resources
+    // Define the service's output topic, which is part of this aggregate's API:
+    public static final OwnedKafkaTopicOutput<String, Integer> TweetHandleUsageStream =
+            register(OccurrenceAggregateDescriptor.TweetHandleUsageStream);
+    // end-snippet
+// formatting:on
 
     public HandleOccurrenceServiceDescriptor() {}
 

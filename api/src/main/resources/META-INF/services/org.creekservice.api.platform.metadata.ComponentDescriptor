@@ -13,9 +13,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# // begin-snippet: existing
-io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor
-# // end-snippet
-# // begin-snippet: new
-io.github.creek.service.ks.aggregate.api.demo.services.external.IngestionAggregateDescriptor
-# // end-snippet
+
+io.github.creek.service.ks.aggregate.api.demo.api.OccurrenceAggregateDescriptor
