@@ -6,12 +6,16 @@
       url: /bootstrap
 - title: "Write the code"
   children:
-    - title: "Aggregate descriptor"
-      url: /descriptor
+    - title: "Creek aggregate API"
+      url: /creek-aggregate-descriptor
+    - title: "Non-Creek aggregate API"
+      url: /non-creek-aggregate-descriptor
 - title: Next steps
   children:
-    - title: "Publishing the api"
+    - title: "Publishing aggregate APIs"
       url: /publish-api
+    - title: "Why aggregates?"
+      url: /why-aggregates
     - title: "Managing API changes"
       url: /managing-api-changes
     - title: "Further reading"

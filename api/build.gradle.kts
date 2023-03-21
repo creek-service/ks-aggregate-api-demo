@@ -5,6 +5,7 @@ plugins {
 val kafkaVersion: String by extra
 val creekVersion : String by extra
 
+// begin-snippet: dependencies
 dependencies {
     api("org.creekservice:creek-kafka-metadata:$creekVersion")
 
@@ -12,3 +13,4 @@ dependencies {
 
     testImplementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 }
+// end-snippet

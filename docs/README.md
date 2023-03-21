@@ -14,7 +14,7 @@ If you want to hack about with the site or add content, then follow these instru
 
 #### 1. Install the gems
 
-```shell
+```
 (cd docs && bundle install)
 ```
 
@@ -22,7 +22,7 @@ If you want to hack about with the site or add content, then follow these instru
 
 Occasionally update gems
 
-```shell
+```
 git checkout main
 git pull
 (cd docs && bundle update)
@@ -34,7 +34,7 @@ git push --set-upstream origin gems-update
 
 #### 3. Run the local server
 
-```shell
+```
 (cd docs && bundle exec jekyll serve --livereload --baseurl /ks-aggregate-api-demo)
 ```
 
