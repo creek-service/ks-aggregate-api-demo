@@ -126,6 +126,11 @@ as Gradle doesn't play nicely with Java modules... yet.
 ensuring the work today _and_ tomorrow.
 {: .notice--info}
 
+**ProTip:** Only descriptors for non-Creek aggregate's need manually registering in this way.
+The registration of the repository's aggregate and service descriptors is handled by the 
+[aggregate template repository][aggTemp] and its scripts.
+{: .notice--info}
+
 ### Descriptors on the module path
 
 If the descriptor resides in a module, the descriptor needs to be declared in the module as a provider of the
@@ -178,5 +183,6 @@ This concludes the coding for the tutorial.
 [serviceLoader]: https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/ServiceLoader.html
 [ksExt]: https://github.com/creek-service/creek-kafka
 [sysTestGradle]: https://github.com/creek-service/creek-system-test-gradle-plugin
+[aggTemp]: {{ site.url | append: "/aggregate-template/" }}
 [todo]: switch about links to proper creekservice.org links once each repo publishes docs.
 
