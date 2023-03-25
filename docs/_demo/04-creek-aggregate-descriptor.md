@@ -114,7 +114,7 @@ There's nothing worst that not being able to patch a production issue due to a d
 {: .notice--info}
 
 [creekExts]: https://www.creekservice.org/extensions/
-[ksExt]: https://github.com/creek-service/creek-kafka
+[ksExt]: https://www.creekservice.org/creek-kafka
 [dataMeshDef]: https://data.world/blog/what-is-data-mesh/
 [dataProductDef]: https://data.world/blog/what-is-a-data-product-and-why-does-it-matter-to-data-mesh/
 [aggDescriptor]: https://www.creekservice.org/docs/descriptors/#aggregate-descriptor

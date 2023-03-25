@@ -181,7 +181,7 @@ This concludes the coding for the tutorial.
 [beyondJava]: https://github.com/creek-service/creek-service/issues/17
 [creekStory]: https://www.creekservice.org/about/#creek-story
 [serviceLoader]: https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/ServiceLoader.html
-[ksExt]: https://github.com/creek-service/creek-kafka
+[ksExt]: https://www.creekservice.org/creek-kafka
 [sysTestGradle]: https://github.com/creek-service/creek-system-test-gradle-plugin
 [aggTemp]: {{ site.url | append: "/aggregate-template/" }}
 [todo]: switch about links to proper creekservice.org links once each repo publishes docs.
