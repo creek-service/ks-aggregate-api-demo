@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022-2025 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,8 @@ class TopologyBuilderTest {
         // When:
         tweetTextStream.pipeInput(
                 1622262145390972929L,
-                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, "
-                        + "Twitter will enable a light, write-only API for bots providing good content that is free.");
+                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, Twitter will enable"
+                        + " a light, write-only API for bots providing good content that is free.");
 
         // Then:
         assertThat(
