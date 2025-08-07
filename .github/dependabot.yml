@@ -17,10 +17,6 @@ updates:
       interval: monthly
   - package-ecosystem: gradle
     directory: /buildSrc
-    registries:
-      - maven-central
-      - maven-snapshots
-      - creek-github-packages
     open-pull-requests-limit: 50
     schedule:
       interval: monthly
