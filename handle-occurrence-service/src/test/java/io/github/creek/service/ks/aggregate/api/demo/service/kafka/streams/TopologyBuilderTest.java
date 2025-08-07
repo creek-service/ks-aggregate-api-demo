@@ -84,8 +84,8 @@ class TopologyBuilderTest {
         // When:
         tweetTextStream.pipeInput(
                 1622262145390972929L,
-                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, "
-                        + "Twitter will enable a light, write-only API for bots providing good content that is free.");
+                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, Twitter will enable"
+                        + " a light, write-only API for bots providing good content that is free.");
 
         // Then:
         assertThat(
