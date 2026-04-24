@@ -21,8 +21,8 @@ import io.github.creek.service.ks.aggregate.api.demo.services.external.Ingestion
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.creekservice.api.kafka.metadata.KafkaTopicInput;
-import org.creekservice.api.kafka.metadata.OwnedKafkaTopicOutput;
+import org.creekservice.api.kafka.metadata.topic.KafkaTopicInput;
+import org.creekservice.api.kafka.metadata.topic.OwnedKafkaTopicOutput;
 import org.creekservice.api.platform.metadata.ComponentInput;
 import org.creekservice.api.platform.metadata.ComponentInternal;
 import org.creekservice.api.platform.metadata.ComponentOutput;
