@@ -8,7 +8,4 @@
         <!-- Exclude generated sources   -->
         <Source name="~.*[\\/]build[\\/]generated[\\/]source.*" />
     </Match>
-    <Match>
-        <Bug pattern="CT_CONSTRUCTOR_THROW" />
-    </Match>
 </FindBugsFilter>
