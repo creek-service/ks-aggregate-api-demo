@@ -187,7 +187,9 @@ public final class TopicDescriptors {
         private final PartDescriptor<V> value;
         private final Optional<KafkaTopicConfig> config;
 
-        @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "false positive: internal class")
+        @SuppressFBWarnings(
+                value = "CT_CONSTRUCTOR_THROW",
+                justification = "false positive: internal class")
         TopicDescriptor(
                 final String topicName,
                 final Class<K> keyType,
