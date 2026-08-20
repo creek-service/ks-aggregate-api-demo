@@ -19,6 +19,7 @@ package io.github.creek.service.ks.aggregate.api.demo.internal;
 import static java.util.Objects.requireNonNull;
 import static org.creekservice.api.kafka.metadata.SerializationFormat.serializationFormat;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -186,6 +187,9 @@ public final class TopicDescriptors {
         private final PartDescriptor<V> value;
         private final Optional<KafkaTopicConfig> config;
 
+        @SuppressFBWarnings(
+                value = "CT_CONSTRUCTOR_THROW",
+                justification = "false positive: internal class")
         TopicDescriptor(
                 final String topicName,
                 final Class<K> keyType,

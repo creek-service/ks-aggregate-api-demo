@@ -51,8 +51,10 @@ subprojects {
     val junitVersion: String by extra
     val junitPioneerVersion: String by extra
     val mockitoVersion: String by extra
+    val spotBugsVersion: String by extra
 
     dependencies {
+        compileOnly("com.github.spotbugs:spotbugs-annotations:$spotBugsVersion")
         testImplementation("org.creekservice:creek-test-hamcrest:$creekVersion")
         testImplementation("org.creekservice:creek-test-util:$creekVersion")
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
