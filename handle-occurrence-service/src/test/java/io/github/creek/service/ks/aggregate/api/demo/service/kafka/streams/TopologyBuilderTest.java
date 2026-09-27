@@ -16,12 +16,12 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams;
 
+import static io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams.TestTopics.inputTopic;
+import static io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams.TestTopics.outputTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetHandleUsageStream;
 import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetTextStream;
 import static org.apache.kafka.streams.KeyValue.pair;
 import static org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
-import static org.creekservice.api.kafka.streams.test.TestTopics.inputTopic;
-import static org.creekservice.api.kafka.streams.test.TestTopics.outputTopic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -34,7 +34,7 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.creekservice.api.kafka.serde.json.JsonSerdeExtensionOptions;
 import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtension;
-import org.creekservice.api.kafka.streams.test.TestKafkaStreamsExtensionOptions;
+import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtensionOptions;
 import org.creekservice.api.service.context.CreekContext;
 import org.creekservice.api.service.context.CreekServices;
 import org.creekservice.api.test.util.TestPaths;
@@ -57,7 +57,7 @@ class TopologyBuilderTest {
         // Initialise Creek in 'test mode':
         ctx =
                 CreekServices.builder(new HandleOccurrenceServiceDescriptor())
-                        .with(TestKafkaStreamsExtensionOptions.defaults())
+                        .with(KafkaStreamsExtensionOptions.testBuilder().build())
                         // Required when using JSON serialization for topic values/keys.
                         // Registers JSON serializers/deserializers with the test framework,
                         // using a mock Schema Registry client so no real Schema Registry is

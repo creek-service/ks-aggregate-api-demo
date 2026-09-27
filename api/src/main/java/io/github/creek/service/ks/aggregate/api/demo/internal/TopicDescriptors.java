@@ -19,6 +19,7 @@ package io.github.creek.service.ks.aggregate.api.demo.internal;
 import static java.util.Objects.requireNonNull;
 import static org.creekservice.api.kafka.metadata.SerializationFormat.serializationFormat;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.creekservice.api.kafka.metadata.SerializationFormat;
@@ -105,8 +106,8 @@ public final class TopicDescriptors {
     /**
      * Create a Kafka topic descriptor for a topic that is implicitly created.
      *
-     * <p>Most internal topics, e.g. Kafka Streams changelog and repartition topics, are
-     * implicitly created, and this is the method to use to build a descriptor for them.
+     * <p>Most internal topics, e.g. Kafka Streams changelog and repartition topics, are implicitly
+     * created, and this is the method to use to build a descriptor for them.
      *
      * <p>For an internal topic that you want Creek to create, use {@link #creatableInternalTopic}.
      *
@@ -125,8 +126,8 @@ public final class TopicDescriptors {
     /**
      * Create a Kafka topic descriptor for a topic that is implicitly created.
      *
-     * <p>Most internal topics, e.g. Kafka Streams changelog and repartition topics, are
-     * implicitly created For such topics use {@link #internalTopic}
+     * <p>Most internal topics, e.g. Kafka Streams changelog and repartition topics, are implicitly
+     * created For such topics use {@link #internalTopic}
      *
      * <p>For an internal topic that you want Creek to create, use this method.
      *
@@ -151,8 +152,7 @@ public final class TopicDescriptors {
      *
      * <p>Looking for a version that returns {@link
      * org.creekservice.api.kafka.metadata.KafkaTopicOutput}? Get one of those by calling {@link
-     * OwnedKafkaTopicInput#toOutput()} on the topic descriptor defined in the downstream
-     * component.
+     * OwnedKafkaTopicInput#toOutput()} on the topic descriptor defined in the downstream component.
      *
      * @param topicName the name of the topic
      * @param keyType the type serialized into the Kafka record key.
@@ -242,6 +242,9 @@ public final class TopicDescriptors {
         private final PartDescriptor<V> value;
         private final Optional<KafkaTopicConfig> config;
 
+        @SuppressFBWarnings(
+                value = "CT_CONSTRUCTOR_THROW",
+                justification = "false positive: internal class")
         TopicDescriptor(
                 final String topicName,
                 final Class<K> keyType,
@@ -274,11 +277,11 @@ public final class TopicDescriptors {
         /**
          * Describes one part (key or value) of a topic's records.
          *
-         * <p>This is an inner class of the topic it describes, so that a JSON schema descriptor
-         * can be typed as {@link OwnedJsonSchemaDescriptor} or {@link UnownedJsonSchemaDescriptor}
-         * according to the ownership of the enclosing topic: a schema is owned by the service
-         * that owns the topic, and unowned when the topic is an unowned input obtained from
-         * another service's output via {@link OwnedKafkaTopicOutput#toInput()}.
+         * <p>This is an inner class of the topic it describes, so that a JSON schema descriptor can
+         * be typed as {@link OwnedJsonSchemaDescriptor} or {@link UnownedJsonSchemaDescriptor}
+         * according to the ownership of the enclosing topic: a schema is owned by the service that
+         * owns the topic, and unowned when the topic is an unowned input obtained from another
+         * service's output via {@link OwnedKafkaTopicOutput#toInput()}.
          */
         @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
         private final class KeyValueDescriptor<T> implements PartDescriptor<T> {
@@ -331,15 +334,17 @@ public final class TopicDescriptors {
             /**
              * Common behaviour of the owned and unowned schema descriptors.
              *
-             * <p>These are inner classes of the part descriptor so that {@link #part()} can
-             * return the enclosing part: the mutual self-reference is what lets a schema
-             * descriptor point back at the topic part it describes, which the metadata API
-             * requires.
+             * <p>These are inner classes of the part descriptor so that {@link #part()} can return
+             * the enclosing part: the mutual self-reference is what lets a schema descriptor point
+             * back at the topic part it describes, which the metadata API requires.
              */
             private abstract class BaseJsonSchema implements JsonSchemaDescriptor<T> {
 
                 private final String schemaRegistryName;
 
+                @SuppressFBWarnings(
+                        value = "CT_CONSTRUCTOR_THROW",
+                        justification = "false positive: internal class")
                 private BaseJsonSchema(final String schemaRegistryName) {
                     this.schemaRegistryName =
                             requireNonNull(schemaRegistryName, "schemaRegistryName");
