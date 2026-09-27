@@ -49,6 +49,15 @@ java {
 
 repositories {
     mavenCentral()
+    mavenLocal()
+    maven {
+        url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+    }
+    // Required for Confluent Schema Registry and JSON Schema Provider dependencies
+    // used by Creek's JSON serialization support (kafka-json-serde module).
+    maven {
+        url = uri("https://packages.confluent.io/maven/")
+    }
 }
 
 dependencies {

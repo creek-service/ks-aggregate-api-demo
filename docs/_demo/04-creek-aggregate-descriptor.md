@@ -35,6 +35,44 @@ Whereas, in a repository named `ks-aggregate-api-demo` would contain a `KsAggreg
 
 The steps below define the API of the tutorial's aggregate: 
 
+## Define the JSON payload
+
+Rather than exposing the raw `Integer` handle count used internally by the first tutorial, the aggregate's
+`twitter.handle.usage` topic will expose a schema validated JSON payload. This gives consumers a documented,
+enforced contract for the data, rather than an opaque, undocumented primitive.
+
+The payload is defined as a plain Java `record` in a new `model` package in the `api` module, annotated with
+`@GeneratesSchema`:
+
+{% highlight java %}
+{% include_snippet usage-count from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/model/UsageCount.java %}
+{% endhighlight %}
+
+**Note:** Keep validation, such as the `count must be greater than zero` check above, in the record's compact
+constructor. This is the validation the generated JSON schema is checked for consistency against.
+{: .notice--info}
+
+The `@GeneratesSchema` annotation marks the type for schema generation by Creek's JSON schema Gradle plugin.
+Enable the plugin, and configure it to scan the `api` module for annotated types, in `api/build.gradle.kts`:
+
+{% highlight kotlin %}
+{% include_snippet schema-plugin from ../api/build.gradle.kts %}
+{% endhighlight %}
+
+Running `./gradlew :api:generateJsonSchema` generates a JSON schema file per annotated type under
+`api/build/generated/resources/schema/main/`, which is packaged as a resource in the `api` jar and used, at
+runtime, by the JSON serde to validate records and register schemas with the Schema Registry.
+
+Finally, the record's package needs opening to reflection, in `api/src/main/java/module-info.java`, so that
+Jackson, used by the JSON serde, can reflectively access the record's canonical constructor and component
+accessors at runtime:
+
+```java
+// Required so Jackson (used by the JSON serde) can reflectively access the record's canonical
+// constructor and component accessors at runtime.
+opens io.github.creek.service.ks.aggregate.api.demo.api.model;
+```
+
 ## Define a Creek aggregate API
 
 Locate the aggregate's descriptor: this is a class named `<something>AggregateDescriptor` in the `api` module.
@@ -57,7 +95,11 @@ It should look like the following:
 }
 {% endhighlight %}
 
-This adds an output topic and `register`s it with the descriptor. 
+This adds an output topic and `register`s it with the descriptor.
+
+Note the use of `outputTopicWithJsonValue`, rather than `outputTopic`: this declares the topic's value as a
+JSON schema validated payload, using the `UsageCount` type defined above, rather than a native Kafka type
+like `Integer` or `String`.
 
 ## Update the service descriptor
 
@@ -98,8 +140,11 @@ The `dependencies` block looks like the following:
 {% include_snippet dependencies from ../api/build.gradle.kts %}
 {% endhighlight %}
 
-The module has a single direct production dependency: the `creek-kafka-metadata` that contains the topic descriptor and config types
-used within the aggregate's descriptor.
+The module has two direct production dependencies: the `creek-kafka-metadata` jar, that contains the topic
+descriptor and config types used within the aggregate's descriptor, and `creek-base-annotation`, that provides
+the `@GeneratesSchema` annotation used to mark JSON payload types above. The `jsonSchemaGenerator` dependency
+is used only at build time, by the JSON schema Gradle plugin, to generate the schema files, and does not end
+up as a runtime dependency of the `api` jar.
 
 As the API module is shared code, as the comment states, it is _strongly_ advised to avoid adding production dependencies
 to this module, other than other _metadata_ jars for specific Creek extensions.

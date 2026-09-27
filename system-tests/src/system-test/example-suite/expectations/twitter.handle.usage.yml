@@ -3,14 +3,20 @@
 topic: twitter.handle.usage
 records:
   - key: "@ScottAdamsSays"
-    value: 1
+    value:
+      count: 1
   - key: "@PepitoTheCat"
-    value: 2
+    value:
+      count: 2
   - key: "@BillyM2k"
-    value: 1
+    value:
+      count: 1
   - key: "@ericnakagawa"
-    value: 1
+    value:
+      count: 1
   - key: "@teslaownersSV"
-    value: 1
+    value:
+      count: 1
   - key: "@teslaownersSV"
-    value: 1
+    value:
+      count: 1

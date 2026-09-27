@@ -85,6 +85,12 @@ of the topic has conceptually moved to the `ingestion-aggregate`.
 
 Referencing the aggregate's topic descriptor, defines in code, that the service is consuming the aggregate's output.
 
+**Note:** if a topic's value were JSON schema validated, as `twitter.handle.usage`'s is, that schema's ownership
+tracks the ownership of the topic descriptor it belongs to. Converting an _owned_ output topic to an _unowned_
+input, as done here, therefore also converts its JSON schema from _owned_ to _unowned_: the schema remains
+owned and managed by the aggregate that originally declared the topic, never by a service merely consuming it.
+{: .notice--info}
+
 ## Testing the changes
 
 As before, ensure the changes are correct by running the build:
@@ -173,6 +179,14 @@ To test the descriptor is now discoverable by the system tests, and the rest of 
 ```
 
 The build should now be green!
+
+**Note:** Because the aggregate's API now includes a JSON schema validated topic value, the `system-tests` module
+installs the `creek-kafka-json-serde` module as a [system-test extension][sysTestGradle], via
+`systemTestExtension("org.creekservice:creek-kafka-json-serde:$creekVersion")` in `system-tests/build.gradle.kts`.
+This is enough, on its own, to cause a Schema Registry container to be started automatically when the system
+tests run, and for the `UsageCount` JSON schema to be registered against it before any service under test
+starts. No further configuration is required.
+{: .notice--info}
 
 This concludes the coding for the tutorial.
 

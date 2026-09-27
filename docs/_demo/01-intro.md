@@ -41,6 +41,8 @@ The key features this tutorial is designed to highlight are:
   If you wish to jump straight to this, see the [Creek aggregate API][creekApi] section.
 * How to interop with parts of the system that predate or don't use Creek.
   If you wish to jump straight to this, see the [Non-Creek aggregate API][nonCreekApi] section.
+* How to expose a schema validated JSON payload as part of an aggregate's API.
+  If you wish to jump straight to this, see the [Define the JSON payload][jsonPayload] section.
 * Why defining aggregates is a powerful architectural pattern.
   If you wish to jump straight to this, see the [Why Aggregates?][whyAggregates] section.
 
@@ -58,7 +60,8 @@ The design changes covered by this tutorial fall into two main tasks:
 
 The first task is to define the public API of the tutorial's own aggregate. 
 The existing `handle-occurrence-service` will see its `twitter.handle.usage` output topic promoted to being part of the aggregating public API.
-The topic will be conceptually _owned_ by the aggregate.
+The topic will be conceptually _owned_ by the aggregate. Its value will also be switched from a raw `Integer` to
+a schema validated JSON payload, giving consumers of the aggregate's API a documented, enforced contract for the data.
 
 The second task is to define the public API of the `ingestion aggregate`. 
 As noted above, this aggregate doesn't use Creek. 
@@ -85,5 +88,6 @@ The completed tutorial can be viewed [on GitHub <i class="fas fa-external-link-a
 [bcDDD]: https://martinfowler.com/bliki/BoundedContext.html
 [creekApi]: {{ "/creek-aggregate-descriptor" | relative_url }}
 [nonCreekApi]: {{ "/non-creek-aggregate-descriptor" | relative_url }}
+[jsonPayload]: {{ "/creek-aggregate-descriptor#define-the-json-payload" | relative_url }}
 [whyAggregates]: {{ "/why-aggregates" | relative_url }}
 [FurtherReadingStep]: {{ "/further-reading" | relative_url }}

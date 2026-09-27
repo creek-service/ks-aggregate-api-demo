@@ -16,16 +16,27 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.internal;
 
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.JSON_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.KAFKA_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.creatableInternalTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.inputTopic;
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.inputTopicWithJsonValue;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.internalTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopicWithJsonValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.when;
 
+import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.creekservice.api.kafka.metadata.schema.OwnedJsonSchemaDescriptor;
+import org.creekservice.api.kafka.metadata.schema.UnownedJsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.topic.CreatableKafkaTopicInternal;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicConfig;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicInput;
@@ -149,5 +160,74 @@ class TopicDescriptorsTest {
         assertThat(input.key().type(), is(Long.class));
         assertThat(input.value().format(), is(KAFKA_FORMAT));
         assertThat(input.value().type(), is(String.class));
+    }
+
+    @Test
+    void shouldCreateOutputTopicWithJsonValue() {
+        // When:
+        final OwnedKafkaTopicOutput<String, UsageCount> topic =
+                outputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.key().resources().collect(Collectors.toList()), empty());
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(UsageCount.class));
+    }
+
+    @Test
+    void shouldExposeOwnedJsonSchemaForOwnedOutputTopicValue() {
+        // Given:
+        final OwnedKafkaTopicOutput<String, UsageCount> topic =
+                outputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+
+        // When:
+        final List<?> resources = topic.value().resources().collect(Collectors.toList());
+
+        // Then: the schema is owned, as this service owns the topic:
+        assertThat(resources, contains(instanceOf(OwnedJsonSchemaDescriptor.class)));
+    }
+
+    @Test
+    void shouldExposeUnownedJsonSchemaWhenOwnedOutputTopicConvertedToInput() {
+        // Given:
+        final OwnedKafkaTopicOutput<String, UsageCount> output =
+                outputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+
+        // When:
+        final KafkaTopicInput<String, UsageCount> input = output.toInput();
+
+        // Then: schema ownership stays with the original, owning, service:
+        final List<?> resources = input.value().resources().collect(Collectors.toList());
+        assertThat(resources, contains(instanceOf(UnownedJsonSchemaDescriptor.class)));
+    }
+
+    @Test
+    void shouldCreateInputTopicWithJsonValue() {
+        // When:
+        final OwnedKafkaTopicInput<String, UsageCount> topic =
+                inputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(UsageCount.class));
+        assertThat(
+                topic.value().resources().collect(Collectors.toList()),
+                contains(instanceOf(OwnedJsonSchemaDescriptor.class)));
+    }
+
+    @Test
+    void shouldExposeUnownedJsonSchemaWhenOwnedInputTopicConvertedToOutput() {
+        // Given:
+        final OwnedKafkaTopicInput<String, UsageCount> input =
+                inputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+
+        // When:
+        final KafkaTopicOutput<String, UsageCount> output = input.toOutput();
+
+        // Then: schema ownership stays with the original, owning, service:
+        final List<?> resources = output.value().resources().collect(Collectors.toList());
+        assertThat(resources, contains(instanceOf(UnownedJsonSchemaDescriptor.class)));
     }
 }

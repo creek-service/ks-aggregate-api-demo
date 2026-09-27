@@ -26,11 +26,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
+import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
 import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
+import org.creekservice.api.kafka.serde.json.JsonSerdeExtensionOptions;
 import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtension;
 import org.creekservice.api.kafka.streams.test.TestKafkaStreamsExtensionOptions;
 import org.creekservice.api.service.context.CreekContext;
@@ -48,7 +50,7 @@ class TopologyBuilderTest {
     private TopologyTestDriver testDriver;
     private Topology topology;
     private TestInputTopic<Long, String> tweetTextStream;
-    private TestOutputTopic<String, Integer> handleUsageStream;
+    private TestOutputTopic<String, UsageCount> handleUsageStream;
 
     @BeforeAll
     public static void classSetup() {
@@ -56,6 +58,11 @@ class TopologyBuilderTest {
         ctx =
                 CreekServices.builder(new HandleOccurrenceServiceDescriptor())
                         .with(TestKafkaStreamsExtensionOptions.defaults())
+                        // Required when using JSON serialization for topic values/keys.
+                        // Registers JSON serializers/deserializers with the test framework,
+                        // using a mock Schema Registry client so no real Schema Registry is
+                        // needed for unit tests.
+                        .with(JsonSerdeExtensionOptions.testBuilder().build())
                         .build();
     }
 
@@ -90,7 +97,9 @@ class TopologyBuilderTest {
         // Then:
         assertThat(
                 handleUsageStream.readKeyValuesToList(),
-                containsInAnyOrder(pair("@PepitoTheCat", 2), pair("@BillyM2k", 1)));
+                containsInAnyOrder(
+                        pair("@PepitoTheCat", new UsageCount(2)),
+                        pair("@BillyM2k", new UsageCount(1))));
     }
 
     /**

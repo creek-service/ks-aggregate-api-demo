@@ -36,9 +36,10 @@ has the potential to, and therefore should be _carefully_ thought through and te
 
 ### Schema evolution
 
-This tutorial uses very simple data types in the keys and values of its Kafka topics.
-A real-world example would have more complex data objects, especially in the values.
-(Creek is [working on supporting this][jsonSupportIssue]).
+This tutorial's `twitter.handle.usage` topic uses a JSON schema validated value, generated from the
+`UsageCount` record in the `api` module and registered with a Confluent-compatible Schema Registry.
+See the [JSON schema format][jsonSchemaFormat] section of the `creek-kafka` docs for more on how Creek
+validates and evolves JSON payloads.
 
 One of the most common changes to existing data products is changes its schema: adding, changing and removing fields.
 
@@ -70,6 +71,6 @@ the new topic. Additional logic, either in the same or a separate service, can c
 topic by consuming and transforming the new one. When the time comes to turn off the old topic, the additional logic or 
 service can be removed, with minimal chance of impacting the new topic.
 
-[jsonSupportIssue]: https://github.com/creek-service/creek-kafka/issues/25
+[jsonSchemaFormat]: https://www.creekservice.org/creek-kafka/#json-schema-format
 [fwdBackCompat]: https://stevenheidel.medium.com/backward-vs-forward-compatibility-9c03c3db15c9
 [confluentAvroEvo]: https://docs.confluent.io/platform/current/schema-registry/avro.html
