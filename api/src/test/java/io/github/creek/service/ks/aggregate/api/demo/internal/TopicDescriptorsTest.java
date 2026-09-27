@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.creekservice.api.kafka.metadata.schema.JsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.schema.OwnedJsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.schema.UnownedJsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.topic.CreatableKafkaTopicInternal;
@@ -186,6 +187,11 @@ class TopicDescriptorsTest {
 
         // Then: the schema is owned, as this service owns the topic:
         assertThat(resources, contains(instanceOf(OwnedJsonSchemaDescriptor.class)));
+
+        // And: the schema correctly identifies the registry and topic part it belongs to:
+        final JsonSchemaDescriptor<?> schema = (JsonSchemaDescriptor<?>) resources.get(0);
+        assertThat(schema.schemaRegistryName(), is("default"));
+        assertThat(schema.part(), is(sameInstance(topic.value())));
     }
 
     @Test

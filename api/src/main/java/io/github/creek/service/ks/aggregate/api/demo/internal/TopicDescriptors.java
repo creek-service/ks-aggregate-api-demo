@@ -383,14 +383,6 @@ public final class TopicDescriptors {
         OutputTopicDescriptor(
                 final String topicName,
                 final Class<K> keyType,
-                final Class<V> valueType,
-                final TopicConfigBuilder config) {
-            super(topicName, keyType, KAFKA_FORMAT, valueType, KAFKA_FORMAT, Optional.of(config));
-        }
-
-        OutputTopicDescriptor(
-                final String topicName,
-                final Class<K> keyType,
                 final SerializationFormat keyFormat,
                 final Class<V> valueType,
                 final SerializationFormat valueFormat,
@@ -407,14 +399,6 @@ public final class TopicDescriptors {
 
     private static final class InputTopicDescriptor<K, V> extends TopicDescriptor<K, V>
             implements OwnedKafkaTopicInput<K, V> {
-
-        InputTopicDescriptor(
-                final String topicName,
-                final Class<K> keyType,
-                final Class<V> valueType,
-                final TopicConfigBuilder config) {
-            super(topicName, keyType, KAFKA_FORMAT, valueType, KAFKA_FORMAT, Optional.of(config));
-        }
 
         InputTopicDescriptor(
                 final String topicName,
