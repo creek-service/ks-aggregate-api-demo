@@ -20,10 +20,8 @@ import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescri
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.KAFKA_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.creatableInternalTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.inputTopic;
-import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.inputTopicWithJsonValue;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.internalTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
-import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopicWithJsonValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -70,7 +68,7 @@ class TopicDescriptorsTest {
     void shouldCreateInputTopic() {
         // When:
         final OwnedKafkaTopicInput<Long, String> topic =
-                inputTopic("name", Long.class, String.class, config);
+                inputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // Then:
         assertThat(topic.id().toString(), is("kafka-topic://default/name"));
@@ -86,7 +84,7 @@ class TopicDescriptorsTest {
     void shouldConvertInputTopicToOutput() {
         // Given:
         final OwnedKafkaTopicInput<Long, String> input =
-                inputTopic("name", Long.class, String.class, config);
+                inputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // When:
         final KafkaTopicOutput<Long, String> output = input.toOutput();
@@ -104,7 +102,7 @@ class TopicDescriptorsTest {
     void shouldCreateInternalTopic() {
         // When:
         final KafkaTopicInternal<Long, String> topic =
-                internalTopic("name", Long.class, String.class);
+                internalTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT);
 
         // Then:
         assertThat(topic.name(), is("name"));
@@ -118,7 +116,8 @@ class TopicDescriptorsTest {
     void shouldCreateCreatableInternalTopic() {
         // When:
         final CreatableKafkaTopicInternal<Long, String> topic =
-                creatableInternalTopic("name", Long.class, String.class, config);
+                creatableInternalTopic(
+                        "name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // Then:
         assertThat(topic.name(), is("name"));
@@ -133,7 +132,7 @@ class TopicDescriptorsTest {
     void shouldCreateOutputTopic() {
         // When:
         final OwnedKafkaTopicOutput<Long, String> topic =
-                outputTopic("name", Long.class, String.class, config);
+                outputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // Then:
         assertThat(topic.id().toString(), is("kafka-topic://default/name"));
@@ -149,7 +148,7 @@ class TopicDescriptorsTest {
     void shouldConvertOutputTopicToInput() {
         // Given:
         final OwnedKafkaTopicOutput<Long, String> output =
-                outputTopic("name", Long.class, String.class, config);
+                outputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // When:
         final KafkaTopicInput<Long, String> input = output.toInput();
@@ -164,10 +163,10 @@ class TopicDescriptorsTest {
     }
 
     @Test
-    void shouldCreateOutputTopicWithJsonValue() {
+    void shouldDefaultOutputTopicValueToJson() {
         // When:
         final OwnedKafkaTopicOutput<String, UsageCount> topic =
-                outputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+                outputTopic("name", String.class, UsageCount.class, config);
 
         // Then:
         assertThat(topic.key().format(), is(KAFKA_FORMAT));
@@ -180,7 +179,7 @@ class TopicDescriptorsTest {
     void shouldExposeOwnedJsonSchemaForOwnedOutputTopicValue() {
         // Given:
         final OwnedKafkaTopicOutput<String, UsageCount> topic =
-                outputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+                outputTopic("name", String.class, UsageCount.class, config);
 
         // When:
         final List<?> resources = topic.value().resources().collect(Collectors.toList());
@@ -198,7 +197,7 @@ class TopicDescriptorsTest {
     void shouldExposeUnownedJsonSchemaWhenOwnedOutputTopicConvertedToInput() {
         // Given:
         final OwnedKafkaTopicOutput<String, UsageCount> output =
-                outputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+                outputTopic("name", String.class, UsageCount.class, config);
 
         // When:
         final KafkaTopicInput<String, UsageCount> input = output.toInput();
@@ -209,10 +208,10 @@ class TopicDescriptorsTest {
     }
 
     @Test
-    void shouldCreateInputTopicWithJsonValue() {
+    void shouldDefaultInputTopicValueToJson() {
         // When:
         final OwnedKafkaTopicInput<String, UsageCount> topic =
-                inputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+                inputTopic("name", String.class, UsageCount.class, config);
 
         // Then:
         assertThat(topic.key().format(), is(KAFKA_FORMAT));
@@ -227,7 +226,7 @@ class TopicDescriptorsTest {
     void shouldExposeUnownedJsonSchemaWhenOwnedInputTopicConvertedToOutput() {
         // Given:
         final OwnedKafkaTopicInput<String, UsageCount> input =
-                inputTopicWithJsonValue("name", String.class, UsageCount.class, config);
+                inputTopic("name", String.class, UsageCount.class, config);
 
         // When:
         final KafkaTopicOutput<String, UsageCount> output = input.toOutput();

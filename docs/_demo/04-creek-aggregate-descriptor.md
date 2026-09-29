@@ -97,9 +97,9 @@ It should look like the following:
 
 This adds an output topic and `register`s it with the descriptor.
 
-Note the use of `outputTopicWithJsonValue`, rather than `outputTopic`: this declares the topic's value as a
-JSON schema validated payload, using the `UsageCount` type defined above, rather than a native Kafka type
-like `Integer` or `String`.
+`outputTopic` defaults to a Kafka-native key and a JSON-schema-validated value, using the
+`UsageCount` type defined above. Use its explicit-format overload when the value is a native
+Kafka type instead, as for the external ingestion aggregate's tweet-text topic.
 
 ## Update the service descriptor
 

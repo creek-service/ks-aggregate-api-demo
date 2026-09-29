@@ -1,6 +1,7 @@
 package io.github.creek.service.ks.aggregate.api.demo.services.external;
 
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicConfigBuilder.withPartitions;
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.KAFKA_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
 
 import java.util.ArrayList;
@@ -28,7 +29,9 @@ public final class IngestionAggregateDescriptor implements AggregateDescriptor {
                     outputTopic(
                             "twitter.tweet.text", // Topic name
                             Long.class, // Topic key type (Tweet id)
+                            KAFKA_FORMAT,
                             String.class, // Topic value type (Tweet text)
+                            KAFKA_FORMAT,
                             withPartitions(5))); // Topic config
 // end-snippet
     // formatting:on
