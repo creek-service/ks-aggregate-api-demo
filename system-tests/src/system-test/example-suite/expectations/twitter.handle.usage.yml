@@ -1,22 +1,30 @@
+# begin-snippet: all
 ---
 !creek/kafka-topic@1
 topic: twitter.handle.usage
 records:
   - key: "@ScottAdamsSays"
     value:
+      handle: "@ScottAdamsSays"
       count: 1
   - key: "@PepitoTheCat"
     value:
+      handle: "@PepitoTheCat"
       count: 2
   - key: "@BillyM2k"
     value:
+      handle: "@BillyM2k"
       count: 1
   - key: "@ericnakagawa"
     value:
+      handle: "@ericnakagawa"
       count: 1
   - key: "@teslaownersSV"
     value:
+      handle: "@teslaownersSV"
       count: 1
   - key: "@teslaownersSV"
     value:
+      handle: "@teslaownersSV"
       count: 1
+# end-snippet

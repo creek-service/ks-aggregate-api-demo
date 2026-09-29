@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022-2023 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,31 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.handle.occurrence.service.kafka.streams;
 
+// formatting:off
 import static io.github.creek.service.ks.aggregate.api.demo.handle.occurrence.service.kafka.streams.TestTopics.inputTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.handle.occurrence.service.kafka.streams.TestTopics.outputTopic;
-import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetHandleUsageStream;
 import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetTextStream;
-import static org.apache.kafka.streams.KeyValue.pair;
+import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetHandleUsageStream;
 import static org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+// begin-snippet: includes
+import static org.apache.kafka.streams.KeyValue.pair;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
-import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
+// end-snippet
+import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
+import io.github.creek.service.ks.aggregate.api.demo.api.model.TweetData;
+import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.creekservice.api.kafka.serde.json.JsonSerdeExtensionOptions;
+import org.creekservice.api.kafka.serde.json.schema.store.client.JsonSchemaStoreClient;
+import org.creekservice.api.kafka.serde.json.schema.store.client.MockJsonSchemaStoreClient;
+import org.creekservice.api.kafka.serde.schema.store.endpoint.MockEndpointsLoader;
+import org.creekservice.api.kafka.serde.schema.store.endpoint.SchemaStoreEndpoints;
 import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtension;
 import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtensionOptions;
 import org.creekservice.api.service.context.CreekContext;
@@ -42,30 +50,47 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+// formatting:on
 
+// begin-snippet: class-declaration
 class TopologyBuilderTest {
+    // end-snippet
 
     private static CreekContext ctx;
 
     private TopologyTestDriver testDriver;
     private Topology topology;
-    private TestInputTopic<Long, String> tweetTextStream;
-    private TestOutputTopic<String, UsageCount> handleUsageStream;
+    // formatting:off
+// begin-snippet: topic-declarations
+    private TestInputTopic<Long, TweetData> tweetTextStream;
+    private TestOutputTopic<String, HandleUsage> handleUsageStream;
+// end-snippet
+    // formatting:on
 
     @BeforeAll
     public static void classSetup() {
         // Initialise Creek in 'test mode':
         ctx =
                 CreekServices.builder(new HandleOccurrenceServiceDescriptor())
+                        // configure creek to work with mocks for Kafka Streams.
                         .with(KafkaStreamsExtensionOptions.testBuilder().build())
-                        // Required when using JSON serialization for topic values/keys.
-                        // Registers JSON serializers/deserializers with the test framework,
-                        // using a mock Schema Registry client so no real Schema Registry is
-                        // needed for unit tests.
-                        .with(JsonSerdeExtensionOptions.testBuilder().build())
+                        // The input schema belongs to the upstream aggregate. This test
+                        // only initializes the service descriptor, so use a permissive mock.
+                        .with(
+                                JsonSerdeExtensionOptions.builder()
+                                        .withTypeOverride(
+                                                JsonSchemaStoreClient.Factory.class,
+                                                (schemaRegistryName, endpoints) ->
+                                                        new MockJsonSchemaStoreClient() {})
+                                        .withTypeOverride(
+                                                SchemaStoreEndpoints.Loader.class,
+                                                new MockEndpointsLoader() {})
+                                        .build())
                         .build();
     }
 
+    // formatting:off
+// begin-snippet: setUp
     @BeforeEach
     public void setUp() {
         final KafkaStreamsExtension ext = ctx.extension(KafkaStreamsExtension.class);
@@ -77,30 +102,35 @@ class TopologyBuilderTest {
         testDriver = new TopologyTestDriver(topology, ext.properties(DEFAULT_CLUSTER_NAME));
 
         // Create the topologies input and output topics"
-        tweetTextStream = inputTopic(TweetTextStream, ctx, testDriver);
-        handleUsageStream = outputTopic(TweetHandleUsageStream, ctx, testDriver);
+        tweetTextStream = inputTopic(TweetTextStream, ext, testDriver);
+        handleUsageStream = outputTopic(TweetHandleUsageStream, ext, testDriver);
     }
+// end-snippet
+    // formatting:on
 
     @AfterEach
     public void tearDown() {
         testDriver.close();
     }
 
+    // formatting:off
+// begin-snippet: unit-test
     @Test
     void shouldOutputHandleOccurrences() {
         // When:
-        tweetTextStream.pipeInput(
-                1622262145390972929L,
-                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, Twitter will enable"
-                        + " a light, write-only API for bots providing good content that is free.");
+        tweetTextStream.pipeInput(1622262145390972929L,
+                new TweetData(1622262145390972929L,
+                        "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, " +
+                        "Twitter will enable a light, write-only API for bots providing good content that is free."));
 
         // Then:
-        assertThat(
-                handleUsageStream.readKeyValuesToList(),
-                containsInAnyOrder(
-                        pair("@PepitoTheCat", new UsageCount(2)),
-                        pair("@BillyM2k", new UsageCount(1))));
+        assertThat(handleUsageStream.readKeyValuesToList(), containsInAnyOrder(
+                pair("@PepitoTheCat", new HandleUsage("@PepitoTheCat", 2)),
+                pair("@BillyM2k", new HandleUsage("@BillyM2k", 1))
+        ));
     }
+// end-snippet
+    // formatting:on
 
     /**
      * A test that intentionally fails when ever the topology changes.

@@ -19,7 +19,7 @@ package io.github.creek.service.ks.aggregate.api.demo.api;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicConfigBuilder.withPartitions;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
 
-import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
+import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,11 +38,11 @@ public final class OccurrenceAggregateDescriptor implements AggregateDescriptor 
 
     // formatting:off
 // begin-snippet: topic-resources
-    public static final OwnedKafkaTopicOutput<String, UsageCount> TweetHandleUsageStream =
+    public static final OwnedKafkaTopicOutput<String, HandleUsage> TweetHandleUsageStream =
             register(outputTopic(
                     "twitter.handle.usage",
                     String.class, // Twitter handle
-                    UsageCount.class,  // Usage count, JSON schema validated
+                    HandleUsage.class,  // Usage count, JSON schema validated
                     withPartitions(6)
                             .withRetentionTime(Duration.ofHours(12))
             ));

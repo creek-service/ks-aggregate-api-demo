@@ -17,7 +17,8 @@
 package io.github.creek.service.ks.aggregate.api.demo.services;
 
 import io.github.creek.service.ks.aggregate.api.demo.api.OccurrenceAggregateDescriptor;
-import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
+import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
+import io.github.creek.service.ks.aggregate.api.demo.api.model.TweetData;
 import io.github.creek.service.ks.aggregate.api.demo.services.external.IngestionAggregateDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +41,7 @@ public final class HandleOccurrenceServiceDescriptor implements ServiceDescripto
     // formatting:off
 // begin-snippet: input-topic-resources
     // Define the tweet-text input topic, managed by the ingestion aggregate:
-    public static final KafkaTopicInput<Long, String> TweetTextStream =
+    public static final KafkaTopicInput<Long, TweetData> TweetTextStream =
             register(IngestionAggregateDescriptor.TweetTextStream.toInput());
     // end-snippet
 // formatting:on
@@ -48,7 +49,7 @@ public final class HandleOccurrenceServiceDescriptor implements ServiceDescripto
     // formatting:off
 // begin-snippet: output-topic-resources
     // Define the service's output topic, which is part of this aggregate's API:
-    public static final OwnedKafkaTopicOutput<String, UsageCount> TweetHandleUsageStream =
+    public static final OwnedKafkaTopicOutput<String, HandleUsage> TweetHandleUsageStream =
             register(OccurrenceAggregateDescriptor.TweetHandleUsageStream);
     // end-snippet
 // formatting:on

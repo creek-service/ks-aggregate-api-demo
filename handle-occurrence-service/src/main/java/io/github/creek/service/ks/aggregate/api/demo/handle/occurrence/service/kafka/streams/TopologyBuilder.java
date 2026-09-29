@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2022-2023 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccur
 import static java.util.Objects.requireNonNull;
 import static org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
 
-import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
+import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
+import io.github.creek.service.ks.aggregate.api.demo.api.model.TweetData;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -45,13 +46,14 @@ public final class TopologyBuilder {
         this.ext = requireNonNull(ext, "ext");
     }
 
+    // begin-snippet: build-method
     public Topology build() {
         final StreamsBuilder builder = new StreamsBuilder();
 
         // Pass a topic descriptor to the Kafka Streams extension to
         // obtain a typed `KafkaTopic` instance, which provides access to serde:
-        final KafkaTopic<Long, String> input = ext.topic(TweetTextStream);
-        final KafkaTopic<String, UsageCount> output = ext.topic(TweetHandleUsageStream);
+        final KafkaTopic<Long, TweetData> input = ext.topic(TweetTextStream);
+        final KafkaTopic<String, HandleUsage> output = ext.topic(TweetHandleUsageStream);
 
         // Build a simple topology:
         // Consume input topic:
@@ -71,19 +73,23 @@ public final class TopologyBuilder {
         return builder.build(ext.properties(DEFAULT_CLUSTER_NAME));
     }
 
+    // end-snippet
+
+    // begin-snippet: extract-method
     private static final Pattern TWEET_HANDLE = Pattern.compile("(?<handle>@[a-zA-Z0-9_]*)");
 
-    private Iterable<KeyValue<String, UsageCount>> extractHandles(
-            final long tweetId, final String tweetText) {
+    private Iterable<KeyValue<String, HandleUsage>> extractHandles(
+            final long tweetId, final TweetData tweetData) {
         final Map<String, Integer> counts = new HashMap<>();
-        final Matcher matcher = TWEET_HANDLE.matcher(tweetText);
+        final Matcher matcher = TWEET_HANDLE.matcher(tweetData.text());
         while (matcher.find()) {
             final String handle = matcher.group("handle");
             counts.compute(handle, (h, count) -> count == null ? 1 : count + 1);
         }
 
         return counts.entrySet().stream()
-                .map(e -> KeyValue.pair(e.getKey(), new UsageCount(e.getValue())))
+                .map(e -> KeyValue.pair(e.getKey(), new HandleUsage(e.getKey(), e.getValue())))
                 .collect(Collectors.toList());
     }
+    // end-snippet
 }

@@ -16,15 +16,23 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.api.model;
 
+import static java.util.Objects.requireNonNull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.creekservice.api.base.annotation.schema.GeneratesSchema;
 
-// begin-snippet: usage-count
-/** The number of times a Twitter handle was encountered within a single occurrence record. */
+// begin-snippet: handle-usage
 @GeneratesSchema
-public record UsageCount(@Schema(minimum = "1") int count) {
+public record HandleUsage(
+        @JsonProperty(required = true) @Schema(minLength = 1) String handle,
+        @Schema(minimum = "1") int count) {
 
-    public UsageCount {
+    public HandleUsage {
+        requireNonNull(handle, "handle");
+        if (handle.isEmpty()) {
+            throw new IllegalArgumentException("handle cannot be empty");
+        }
         if (count <= 0) {
             throw new IllegalArgumentException("count must be greater than zero");
         }

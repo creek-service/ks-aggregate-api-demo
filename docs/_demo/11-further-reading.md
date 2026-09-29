@@ -17,7 +17,7 @@ If you're ready to jump in and start using Creek, then we'd suggest you head on 
 [aggregate template][aggTemp] next and then get building.
 
 This tutorial's aggregate publishes a schema validated JSON payload, via the `twitter.handle.usage`
-topic's `UsageCount` value, registered with a Confluent-compatible Schema Registry. See the
+topic's `HandleUsage` value, registered with a Confluent-compatible Schema Registry. See the
 [JSON schema format <i class="fas fa-external-link-alt"></i>][jsonSchemaFormat]{:target="_blank"}
 section of the `creek-kafka` docs for more details on how Creek validates and evolves JSON payloads.
 {: .notice--info}
