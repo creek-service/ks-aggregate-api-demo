@@ -16,12 +16,13 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.creekservice.api.base.annotation.schema.GeneratesSchema;
 
 // begin-snippet: usage-count
 /** The number of times a Twitter handle was encountered within a single occurrence record. */
 @GeneratesSchema
-public record UsageCount(int count) {
+public record UsageCount(@Schema(minimum = "1") int count) {
 
     public UsageCount {
         if (count <= 0) {

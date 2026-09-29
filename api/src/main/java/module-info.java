@@ -4,6 +4,7 @@ import org.creekservice.api.platform.metadata.ComponentDescriptor;
 module ks.aggregate.api.demo.api {
     requires transitive creek.kafka.metadata;
     requires creek.base.annotation;
+    requires static io.swagger.v3.oas.annotations;
     requires static com.github.spotbugs.annotations;
 
     exports io.github.creek.service.ks.aggregate.api.demo.api;

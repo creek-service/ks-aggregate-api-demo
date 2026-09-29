@@ -140,11 +140,14 @@ The `dependencies` block looks like the following:
 {% include_snippet dependencies from ../api/build.gradle.kts %}
 {% endhighlight %}
 
-The module has two direct production dependencies: the `creek-kafka-metadata` jar, that contains the topic
-descriptor and config types used within the aggregate's descriptor, and `creek-base-annotation`, that provides
-the `@GeneratesSchema` annotation used to mark JSON payload types above. The `jsonSchemaGenerator` dependency
+The module has one direct runtime dependency: the `creek-kafka-metadata` jar, that contains the topic
+descriptor and config types used within the aggregate's descriptor. `creek-base-annotation` provides the
+`@GeneratesSchema` annotation used to mark JSON payload types above, and `swagger-annotations` provides the
+`@Schema` annotation used to capture schema constraints such as `minimum`/`minLength`; both are only needed
+to drive schema generation, so are declared `compileOnlyApi` to keep them off the runtime classpath while
+still being visible to anything compiling against this module's types. The `jsonSchemaGenerator` dependency
 is used only at build time, by the JSON schema Gradle plugin, to generate the schema files, and does not end
-up as a runtime dependency of the `api` jar.
+up as a runtime dependency of the `api` jar either.
 
 As the API module is shared code, as the comment states, it is _strongly_ advised to avoid adding production dependencies
 to this module, other than other _metadata_ jars for specific Creek extensions.
