@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams;
+package io.github.creek.service.ks.aggregate.api.demo.example.service.kafka.streams;
 
-import static io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams.TestTopics.inputTopic;
-import static io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams.TestTopics.outputTopic;
-import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetHandleUsageStream;
-import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor.TweetTextStream;
 import static org.apache.kafka.streams.KeyValue.pair;
 import static org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
+import static org.creekservice.api.kafka.streams.test.TestTopics.inputTopic;
+import static org.creekservice.api.kafka.streams.test.TestTopics.outputTopic;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
-import io.github.creek.service.ks.aggregate.api.demo.api.model.UsageCount;
-import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
+import io.github.creek.service.ks.aggregate.api.demo.example.service.kafka.streams.TopologyBuilder;
+import io.github.creek.service.ks.aggregate.api.demo.services.ExampleServiceDescriptor;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
-import org.creekservice.api.kafka.serde.json.JsonSerdeExtensionOptions;
 import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtension;
-import org.creekservice.api.kafka.streams.extension.KafkaStreamsExtensionOptions;
+import org.creekservice.api.kafka.streams.test.TestKafkaStreamsExtensionOptions;
 import org.creekservice.api.service.context.CreekContext;
 import org.creekservice.api.service.context.CreekServices;
 import org.creekservice.api.test.util.TestPaths;
@@ -49,20 +46,12 @@ class TopologyBuilderTest {
 
     private TopologyTestDriver testDriver;
     private Topology topology;
-    private TestInputTopic<Long, String> tweetTextStream;
-    private TestOutputTopic<String, UsageCount> handleUsageStream;
 
     @BeforeAll
     public static void classSetup() {
-        // Initialise Creek in 'test mode':
         ctx =
-                CreekServices.builder(new HandleOccurrenceServiceDescriptor())
-                        .with(KafkaStreamsExtensionOptions.testBuilder().build())
-                        // Required when using JSON serialization for topic values/keys.
-                        // Registers JSON serializers/deserializers with the test framework,
-                        // using a mock Schema Registry client so no real Schema Registry is
-                        // needed for unit tests.
-                        .with(JsonSerdeExtensionOptions.testBuilder().build())
+                CreekServices.builder(new ExampleServiceDescriptor())
+                        .with(TestKafkaStreamsExtensionOptions.defaults())
                         .build();
     }
 
@@ -70,15 +59,8 @@ class TopologyBuilderTest {
     public void setUp() {
         final KafkaStreamsExtension ext = ctx.extension(KafkaStreamsExtension.class);
 
-        // Build the topology under test:
         topology = new TopologyBuilder(ext).build();
-
-        // Kafka Streams test topology driver:
         testDriver = new TopologyTestDriver(topology, ext.properties(DEFAULT_CLUSTER_NAME));
-
-        // Create the topologies input and output topics"
-        tweetTextStream = inputTopic(TweetTextStream, ctx, testDriver);
-        handleUsageStream = outputTopic(TweetHandleUsageStream, ctx, testDriver);
     }
 
     @AfterEach
@@ -86,21 +68,6 @@ class TopologyBuilderTest {
         testDriver.close();
     }
 
-    @Test
-    void shouldOutputHandleOccurrences() {
-        // When:
-        tweetTextStream.pipeInput(
-                1622262145390972929L,
-                "@PepitoTheCat @BillyM2k @PepitoTheCat Responding to feedback, Twitter will enable"
-                        + " a light, write-only API for bots providing good content that is free.");
-
-        // Then:
-        assertThat(
-                handleUsageStream.readKeyValuesToList(),
-                containsInAnyOrder(
-                        pair("@PepitoTheCat", new UsageCount(2)),
-                        pair("@BillyM2k", new UsageCount(1))));
-    }
 
     /**
      * A test that intentionally fails when ever the topology changes.
@@ -123,7 +90,7 @@ class TopologyBuilderTest {
         // Given:
         final String expectedTopology =
                 TestPaths.readString(
-                        TestPaths.moduleRoot("handle-occurrence-service")
+                        TestPaths.moduleRoot("example-service")
                                 .resolve("src/test/resources/kafka/streams/expected_topology.txt"));
 
         // When:

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.creek.service.ks.aggregate.api.demo.service.kafka.streams;
+package io.github.creek.service.ks.aggregate.api.demo.handle.occurrence.service.kafka.streams;
 
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;

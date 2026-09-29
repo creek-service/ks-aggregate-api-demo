@@ -11,7 +11,7 @@ module ks.aggregate.api.demo.api {
     exports io.github.creek.service.ks.aggregate.api.demo.api.model;
     exports io.github.creek.service.ks.aggregate.api.demo.internal to
             ks.aggregate.api.demo.services,
-            ks.aggregate.api.demo.service;
+            ks.aggregate.api.demo.handle.occurrence.service;
 
     // Required so Jackson (used by the JSON serde) can reflectively access the record's
     // canonical constructor and component accessors at runtime.
