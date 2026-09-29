@@ -14,8 +14,6 @@ module ks.aggregate.api.demo.api {
             ks.aggregate.api.demo.handle.occurrence.service;
 
     // begin-snippet: opens-model
-    // Required so Jackson (used by the JSON serde) can reflectively access the record's
-    // canonical constructor and component accessors at runtime.
     opens io.github.creek.service.ks.aggregate.api.demo.api.model;
 
     // end-snippet
