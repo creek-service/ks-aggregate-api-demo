@@ -76,6 +76,7 @@ class TopologyBuilderTest {
                         .with(KafkaStreamsExtensionOptions.testBuilder().build())
                         // The input schema belongs to the upstream aggregate. This test
                         // only initializes the service descriptor, so use a permissive mock.
+                        // begin-snippet: json-serde-test-options
                         .with(
                                 JsonSerdeExtensionOptions.builder()
                                         .withTypeOverride(
@@ -86,6 +87,7 @@ class TopologyBuilderTest {
                                                 SchemaStoreEndpoints.Loader.class,
                                                 new MockEndpointsLoader() {})
                                         .build())
+                        // end-snippet
                         .build();
     }
 

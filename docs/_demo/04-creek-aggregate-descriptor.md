@@ -67,11 +67,9 @@ Finally, the record's package needs opening to reflection, in `api/src/main/java
 Jackson, used by the JSON serde, can reflectively access the record's canonical constructor and component
 accessors at runtime:
 
-```java
-// Required so Jackson (used by the JSON serde) can reflectively access the record's canonical
-// constructor and component accessors at runtime.
-opens io.github.creek.service.ks.aggregate.api.demo.api.model;
-```
+{% highlight java %}
+{% include_snippet opens-model from ../api/src/main/java/module-info.java %}
+{% endhighlight %}
 
 ## Define a Creek aggregate API
 
@@ -124,15 +122,11 @@ Referencing the aggregate's topic descriptor, defines in code, that the service'
 
 Because the topology unit test initializes only the service descriptor, it cannot register schemas
 owned by an aggregate descriptor. In `TopologyBuilderTest.classSetup`, replace
-`JsonSerdeExtensionOptions.testBuilder().build()` with:
+`.with(JsonSerdeExtensionOptions.testBuilder().build())` with:
 
-```java
-JsonSerdeExtensionOptions.builder()
-        .withTypeOverride(JsonSchemaStoreClient.Factory.class,
-                (schemaRegistryName, endpoints) -> new MockJsonSchemaStoreClient() {})
-        .withTypeOverride(SchemaStoreEndpoints.Loader.class, new MockEndpointsLoader() {})
-        .build()
-```
+{% highlight java %}
+{% include_snippet json-serde-test-options from ../handle-occurrence-service/src/test/java/io/github/creek/service/ks/aggregate/api/demo/handle/occurrence/service/kafka/streams/TopologyBuilderTest.java %}
+{% endhighlight %}
 
 Import `JsonSchemaStoreClient`, `MockJsonSchemaStoreClient`, `SchemaStoreEndpoints`, and
 `MockEndpointsLoader`. The permissive mock allows the isolated unit test to resolve
