@@ -38,6 +38,7 @@ import org.creekservice.api.kafka.metadata.schema.OwnedJsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.schema.UnownedJsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.topic.CreatableKafkaTopicInternal;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicConfig;
+import org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.PartDescriptor.Part;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicInput;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicInternal;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicOutput;
@@ -73,8 +74,10 @@ class TopicDescriptorsTest {
         // Then:
         assertThat(topic.id().toString(), is("kafka-topic://default/name"));
         assertThat(topic.name(), is("name"));
+        assertThat(topic.key().name(), is(Part.key));
         assertThat(topic.key().format(), is(KAFKA_FORMAT));
         assertThat(topic.key().type(), is(Long.class));
+        assertThat(topic.value().name(), is(Part.value));
         assertThat(topic.value().format(), is(KAFKA_FORMAT));
         assertThat(topic.value().type(), is(String.class));
         assertThat(topic.config(), is(sameInstance(CONFIG)));
@@ -113,6 +116,18 @@ class TopicDescriptorsTest {
     }
 
     @Test
+    void shouldDefaultInternalTopicValueToJson() {
+        // When:
+        final KafkaTopicInternal<String, UsageCount> topic =
+                internalTopic("name", String.class, UsageCount.class);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(UsageCount.class));
+    }
+
+    @Test
     void shouldCreateCreatableInternalTopic() {
         // When:
         final CreatableKafkaTopicInternal<Long, String> topic =
@@ -125,6 +140,19 @@ class TopicDescriptorsTest {
         assertThat(topic.key().type(), is(Long.class));
         assertThat(topic.value().format(), is(KAFKA_FORMAT));
         assertThat(topic.value().type(), is(String.class));
+        assertThat(topic.config(), is(sameInstance(CONFIG)));
+    }
+
+    @Test
+    void shouldDefaultCreatableInternalTopicValueToJson() {
+        // When:
+        final CreatableKafkaTopicInternal<String, UsageCount> topic =
+                creatableInternalTopic("name", String.class, UsageCount.class, config);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(UsageCount.class));
         assertThat(topic.config(), is(sameInstance(CONFIG)));
     }
 
