@@ -42,7 +42,8 @@ of the organisation, i.e. other aggregates.
 In [Data Mesh][dataMeshDef] terminology, the output topics, and to a lesser extent, the input topics that form 
 an aggregate's API constitute the set of [data products][dataProductDef] the aggregate exposes to the rest of the
 
-In this tutorial, the aggregate defines a single data product: the `twitter.handle.usage` topic.
+In this tutorial, the aggregate defines a single data product: the `twitter.handle.usage` topic, whose
+value is a schema validated JSON payload, giving consumers a documented, enforced contract for the data.
 In real world examples, it's common for an aggregate to expose many data products. These might be Kafka topics or,
 with future Creek [extentions][extentions], other technologies such as AWS S3 buckets, data accessible through rest endpoints, 
 you name it.

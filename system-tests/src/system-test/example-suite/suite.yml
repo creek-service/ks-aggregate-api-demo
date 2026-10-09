@@ -1,5 +1,6 @@
+# begin-snippet: all
 ---
-name: basic suite
+name: example-suite
 services:
   - handle-occurrence-service
 tests:
@@ -8,3 +9,4 @@ tests:
       - twitter.tweet.text
     expectations:
       - twitter.handle.usage
+# end-snippet

@@ -35,12 +35,50 @@ Whereas, in a repository named `ks-aggregate-api-demo` would contain a `KsAggreg
 
 The steps below define the API of the tutorial's aggregate: 
 
+## Define the JSON payload
+
+The completed basic tutorial already defined `HandleUsage` as the schema-validated JSON payload
+for `twitter.handle.usage`. Keep that record and its schema: this tutorial changes *who owns*
+the topic, not its payload contract.
+
+The payload is a Java `record` in the `api` module's `model` package, annotated with
+`@GeneratesSchema`:
+
+{% highlight java %}
+{% include_snippet handle-usage from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/model/HandleUsage.java %}
+{% endhighlight %}
+
+**Note:** Keep validation, such as the `count must be greater than zero` check above, in the record's compact
+constructor. This is the validation the generated JSON schema is checked for consistency against.
+{: .notice--info}
+
+The `@GeneratesSchema` annotation marks the type for schema generation by Creek's JSON schema Gradle plugin.
+The previous tutorial already enabled that plugin and configured it to scan the `api` module:
+
+{% highlight kotlin %}
+{% include_snippet schema-plugin from ../api/build.gradle.kts %}
+{% endhighlight %}
+
+Running `./gradlew :api:generateJsonSchema` generates a JSON schema file per annotated type under
+`api/build/generated/resources/schema/main/`, which is packaged as a resource in the `api` jar and used, at
+runtime, by the JSON serde to validate records and register schemas with the Schema Registry.
+
+Finally, the record's package needs opening to reflection, in `api/src/main/java/module-info.java`, so that
+Jackson, used by the JSON serde, can reflectively access the record's canonical constructor and component
+accessors at runtime:
+
+{% highlight java %}
+{% include_snippet opens-model from ../api/src/main/java/module-info.java %}
+{% endhighlight %}
+
 ## Define a Creek aggregate API
 
 Locate the aggregate's descriptor: this is a class named `<something>AggregateDescriptor` in the `api` module.
 
-To keep things consistent, rename the class to `OccurrenceAggregateDescriptor`. This should help avoid confusion 
-later due to potentially different class names. 
+To keep things consistent, rename the class and file to `OccurrenceAggregateDescriptor`.
+Also update the provider class in `api/src/main/java/module-info.java` and in
+`api/src/main/resources/META-INF/services/org.creekservice.api.platform.metadata.ComponentDescriptor`,
+and rename the aggregate descriptor test class and file in `api/src/test/java`.
 
 Locate the `handle-occurrence-service`'s descriptor: declared in the `HandleOccurrenceServiceDescriptor` 
 class, within the `services` module. Copy it's `TweetHandleUsageStream` declaration into  `OccurrenceAggregateDescriptor`. 
@@ -57,7 +95,11 @@ It should look like the following:
 }
 {% endhighlight %}
 
-This adds an output topic and `register`s it with the descriptor. 
+This adds an output topic and `register`s it with the descriptor.
+
+`outputTopic` defaults to a Kafka-native key and a JSON-schema-validated value, using the
+`HandleUsage` type inherited from the previous tutorial. The external ingestion aggregate's
+tweet-text topic also carries a JSON value, `TweetData`.
 
 ## Update the service descriptor
 
@@ -77,6 +119,19 @@ Update the `TweetHandleUsageStream` declaration in the `HandleOccurrenceServiceD
 {% endhighlight %}
 
 Referencing the aggregate's topic descriptor, defines in code, that the service's output topic is part of the aggregate's api.
+
+Because the topology unit test initializes only the service descriptor, it cannot register schemas
+owned by an aggregate descriptor. In `TopologyBuilderTest.classSetup`, replace
+`.with(JsonSerdeExtensionOptions.testBuilder().build())` with:
+
+{% highlight java %}
+{% include_snippet json-serde-test-options from ../handle-occurrence-service/src/test/java/io/github/creek/service/ks/aggregate/api/demo/handle/occurrence/service/kafka/streams/TopologyBuilderTest.java %}
+{% endhighlight %}
+
+Import `JsonSchemaStoreClient`, `MockJsonSchemaStoreClient`, `SchemaStoreEndpoints`, and
+`MockEndpointsLoader`. The permissive mock allows the isolated unit test to resolve
+aggregate-owned schemas without a real Schema Registry. Leave the inherited JSON topology,
+model and test fixtures unchanged.
 
 ## Testing the changes
 
@@ -98,8 +153,11 @@ The `dependencies` block looks like the following:
 {% include_snippet dependencies from ../api/build.gradle.kts %}
 {% endhighlight %}
 
-The module has a single direct production dependency: the `creek-kafka-metadata` that contains the topic descriptor and config types
-used within the aggregate's descriptor.
+The runtime dependencies are `creek-kafka-metadata` (topic descriptors), `creek-base-annotation`
+(`@GeneratesSchema`), and Jackson annotations for the inherited `TweetData` and `HandleUsage`
+records. Swagger annotations capture schema constraints and remain available to consumers via
+`compileOnlyApi`. The `jsonSchemaGenerator` dependency is used only at build time by the JSON
+schema plugin, not packaged in the `api` jar.
 
 As the API module is shared code, as the comment states, it is _strongly_ advised to avoid adding production dependencies
 to this module, other than other _metadata_ jars for specific Creek extensions.

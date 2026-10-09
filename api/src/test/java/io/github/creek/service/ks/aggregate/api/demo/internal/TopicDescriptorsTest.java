@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 Creek Contributors (https://github.com/creek-service)
+ * Copyright 2021-2026 Creek Contributors (https://github.com/creek-service)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,29 @@
 
 package io.github.creek.service.ks.aggregate.api.demo.internal;
 
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.JSON_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.KAFKA_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.creatableInternalTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.inputTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.internalTopic;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.when;
 
+import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.creekservice.api.kafka.metadata.schema.JsonSchemaDescriptor;
+import org.creekservice.api.kafka.metadata.schema.OwnedJsonSchemaDescriptor;
+import org.creekservice.api.kafka.metadata.schema.UnownedJsonSchemaDescriptor;
 import org.creekservice.api.kafka.metadata.topic.CreatableKafkaTopicInternal;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicConfig;
+import org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.PartDescriptor.Part;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicInput;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicInternal;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicOutput;
@@ -58,13 +69,15 @@ class TopicDescriptorsTest {
     void shouldCreateInputTopic() {
         // When:
         final OwnedKafkaTopicInput<Long, String> topic =
-                inputTopic("name", Long.class, String.class, config);
+                inputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // Then:
         assertThat(topic.id().toString(), is("kafka-topic://default/name"));
         assertThat(topic.name(), is("name"));
+        assertThat(topic.key().name(), is(Part.key));
         assertThat(topic.key().format(), is(KAFKA_FORMAT));
         assertThat(topic.key().type(), is(Long.class));
+        assertThat(topic.value().name(), is(Part.value));
         assertThat(topic.value().format(), is(KAFKA_FORMAT));
         assertThat(topic.value().type(), is(String.class));
         assertThat(topic.config(), is(sameInstance(CONFIG)));
@@ -74,7 +87,7 @@ class TopicDescriptorsTest {
     void shouldConvertInputTopicToOutput() {
         // Given:
         final OwnedKafkaTopicInput<Long, String> input =
-                inputTopic("name", Long.class, String.class, config);
+                inputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // When:
         final KafkaTopicOutput<Long, String> output = input.toOutput();
@@ -92,7 +105,7 @@ class TopicDescriptorsTest {
     void shouldCreateInternalTopic() {
         // When:
         final KafkaTopicInternal<Long, String> topic =
-                internalTopic("name", Long.class, String.class);
+                internalTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT);
 
         // Then:
         assertThat(topic.name(), is("name"));
@@ -103,10 +116,23 @@ class TopicDescriptorsTest {
     }
 
     @Test
+    void shouldDefaultInternalTopicValueToJson() {
+        // When:
+        final KafkaTopicInternal<String, HandleUsage> topic =
+                internalTopic("name", String.class, HandleUsage.class);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(HandleUsage.class));
+    }
+
+    @Test
     void shouldCreateCreatableInternalTopic() {
         // When:
         final CreatableKafkaTopicInternal<Long, String> topic =
-                creatableInternalTopic("name", Long.class, String.class, config);
+                creatableInternalTopic(
+                        "name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // Then:
         assertThat(topic.name(), is("name"));
@@ -118,10 +144,23 @@ class TopicDescriptorsTest {
     }
 
     @Test
+    void shouldDefaultCreatableInternalTopicValueToJson() {
+        // When:
+        final CreatableKafkaTopicInternal<String, HandleUsage> topic =
+                creatableInternalTopic("name", String.class, HandleUsage.class, config);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(HandleUsage.class));
+        assertThat(topic.config(), is(sameInstance(CONFIG)));
+    }
+
+    @Test
     void shouldCreateOutputTopic() {
         // When:
         final OwnedKafkaTopicOutput<Long, String> topic =
-                outputTopic("name", Long.class, String.class, config);
+                outputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // Then:
         assertThat(topic.id().toString(), is("kafka-topic://default/name"));
@@ -137,7 +176,7 @@ class TopicDescriptorsTest {
     void shouldConvertOutputTopicToInput() {
         // Given:
         final OwnedKafkaTopicOutput<Long, String> output =
-                outputTopic("name", Long.class, String.class, config);
+                outputTopic("name", Long.class, KAFKA_FORMAT, String.class, KAFKA_FORMAT, config);
 
         // When:
         final KafkaTopicInput<Long, String> input = output.toInput();
@@ -149,5 +188,79 @@ class TopicDescriptorsTest {
         assertThat(input.key().type(), is(Long.class));
         assertThat(input.value().format(), is(KAFKA_FORMAT));
         assertThat(input.value().type(), is(String.class));
+    }
+
+    @Test
+    void shouldDefaultOutputTopicValueToJson() {
+        // When:
+        final OwnedKafkaTopicOutput<String, HandleUsage> topic =
+                outputTopic("name", String.class, HandleUsage.class, config);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.key().resources().collect(Collectors.toList()), empty());
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(HandleUsage.class));
+    }
+
+    @Test
+    void shouldExposeOwnedJsonSchemaForOwnedOutputTopicValue() {
+        // Given:
+        final OwnedKafkaTopicOutput<String, HandleUsage> topic =
+                outputTopic("name", String.class, HandleUsage.class, config);
+
+        // When:
+        final List<?> resources = topic.value().resources().collect(Collectors.toList());
+
+        // Then: the schema is owned, as this service owns the topic:
+        assertThat(resources, contains(instanceOf(OwnedJsonSchemaDescriptor.class)));
+
+        // And: the schema correctly identifies the registry and topic part it belongs to:
+        final JsonSchemaDescriptor<?> schema = (JsonSchemaDescriptor<?>) resources.get(0);
+        assertThat(schema.schemaRegistryName(), is("default"));
+        assertThat(schema.part(), is(sameInstance(topic.value())));
+    }
+
+    @Test
+    void shouldExposeUnownedJsonSchemaWhenOwnedOutputTopicConvertedToInput() {
+        // Given:
+        final OwnedKafkaTopicOutput<String, HandleUsage> output =
+                outputTopic("name", String.class, HandleUsage.class, config);
+
+        // When:
+        final KafkaTopicInput<String, HandleUsage> input = output.toInput();
+
+        // Then: schema ownership stays with the original, owning, service:
+        final List<?> resources = input.value().resources().collect(Collectors.toList());
+        assertThat(resources, contains(instanceOf(UnownedJsonSchemaDescriptor.class)));
+    }
+
+    @Test
+    void shouldDefaultInputTopicValueToJson() {
+        // When:
+        final OwnedKafkaTopicInput<String, HandleUsage> topic =
+                inputTopic("name", String.class, HandleUsage.class, config);
+
+        // Then:
+        assertThat(topic.key().format(), is(KAFKA_FORMAT));
+        assertThat(topic.value().format(), is(JSON_FORMAT));
+        assertThat(topic.value().type(), is(HandleUsage.class));
+        assertThat(
+                topic.value().resources().collect(Collectors.toList()),
+                contains(instanceOf(OwnedJsonSchemaDescriptor.class)));
+    }
+
+    @Test
+    void shouldExposeUnownedJsonSchemaWhenOwnedInputTopicConvertedToOutput() {
+        // Given:
+        final OwnedKafkaTopicInput<String, HandleUsage> input =
+                inputTopic("name", String.class, HandleUsage.class, config);
+
+        // When:
+        final KafkaTopicOutput<String, HandleUsage> output = input.toOutput();
+
+        // Then: schema ownership stays with the original, owning, service:
+        final List<?> resources = output.value().resources().collect(Collectors.toList());
+        assertThat(resources, contains(instanceOf(UnownedJsonSchemaDescriptor.class)));
     }
 }
