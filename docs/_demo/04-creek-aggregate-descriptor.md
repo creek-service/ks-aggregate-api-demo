@@ -37,9 +37,9 @@ The steps below define the API of the tutorial's aggregate:
 
 ## Define the JSON payload
 
-The completed basic tutorial already defined `HandleUsage` as the schema-validated JSON payload
-for `twitter.handle.usage`. Keep that record and its schema: this tutorial changes *who owns*
-the topic, not its payload contract.
+The completed basic tutorial defined `HandleUsage` as the schema-validated JSON payload
+for `twitter.handle.usage` in the `services` module. Now that the topic is being exposed
+as part of the aggregate's API, move that record to the `api` module without changing its payload contract.
 
 The payload is a Java `record` in the `api` module's `model` package, annotated with
 `@GeneratesSchema`:
@@ -53,7 +53,8 @@ constructor. This is the validation the generated JSON schema is checked for con
 {: .notice--info}
 
 The `@GeneratesSchema` annotation marks the type for schema generation by Creek's JSON schema Gradle plugin.
-The previous tutorial already enabled that plugin and configured it to scan the `api` module:
+Move the plugin and its schema-generator dependency from `services/build.gradle.kts` to
+`api/build.gradle.kts`, and configure it to scan the `api` module:
 
 {% highlight kotlin %}
 {% include_snippet schema-plugin from ../api/build.gradle.kts %}
@@ -65,7 +66,7 @@ runtime, by the JSON serde to validate records and register schemas with the Sch
 
 Finally, the record's package needs opening to reflection, in `api/src/main/java/module-info.java`, so that
 Jackson, used by the JSON serde, can reflectively access the record's canonical constructor and component
-accessors at runtime:
+accessors at runtime. Move the package's `exports` and `opens` declarations to the `api` module too:
 
 {% highlight java %}
 {% include_snippet opens-model from ../api/src/main/java/module-info.java %}
@@ -97,9 +98,9 @@ It should look like the following:
 
 This adds an output topic and `register`s it with the descriptor.
 
-`outputTopic` defaults to a Kafka-native key and a JSON-schema-validated value, using the
-`HandleUsage` type inherited from the previous tutorial. The external ingestion aggregate's
-tweet-text topic also carries a JSON value, `TweetData`.
+`outputTopic` explicitly selects a Kafka-native key and a JSON-schema-validated value, using the
+`HandleUsage` type moved into the aggregate's API. The external ingestion aggregate's
+tweet-text topic instead carries a Kafka-native `String` value.
 
 ## Update the service descriptor
 
@@ -130,8 +131,7 @@ owned by an aggregate descriptor. In `TopologyBuilderTest.classSetup`, replace
 
 Import `JsonSchemaStoreClient`, `MockJsonSchemaStoreClient`, `SchemaStoreEndpoints`, and
 `MockEndpointsLoader`. The permissive mock allows the isolated unit test to resolve
-aggregate-owned schemas without a real Schema Registry. Leave the inherited JSON topology,
-model and test fixtures unchanged.
+aggregate-owned schemas without a real Schema Registry. Leave the output payload contract unchanged.
 
 ## Testing the changes
 
@@ -154,8 +154,8 @@ The `dependencies` block looks like the following:
 {% endhighlight %}
 
 The runtime dependencies are `creek-kafka-metadata` (topic descriptors), `creek-base-annotation`
-(`@GeneratesSchema`), and Jackson annotations for the inherited `TweetData` and `HandleUsage`
-records. Swagger annotations capture schema constraints and remain available to consumers via
+(`@GeneratesSchema`), and Jackson annotations for the aggregate API's `HandleUsage`
+record. Swagger annotations capture schema constraints and remain available to consumers via
 `compileOnlyApi`. The `jsonSchemaGenerator` dependency is used only at build time by the JSON
 schema plugin, not packaged in the `api` jar.
 

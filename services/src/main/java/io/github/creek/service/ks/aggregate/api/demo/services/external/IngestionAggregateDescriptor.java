@@ -1,9 +1,9 @@
 package io.github.creek.service.ks.aggregate.api.demo.services.external;
 
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicConfigBuilder.withPartitions;
+import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.KAFKA_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
 
-import io.github.creek.service.ks.aggregate.api.demo.api.model.TweetData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,12 +24,14 @@ public final class IngestionAggregateDescriptor implements AggregateDescriptor {
     // formatting:off
 // begin-snippet: topic-resources
     // Define the tweet-text output topic, conceptually owned by this aggregate:
-    public static final OwnedKafkaTopicOutput<Long, TweetData> TweetTextStream =
+    public static final OwnedKafkaTopicOutput<Long, String> RawTweetStream =
             register(
                     outputTopic(
                             "twitter.tweet.text", // Topic name
                             Long.class, // Topic key type (Tweet id)
-                            TweetData.class, // JSON tweet payload
+                            KAFKA_FORMAT,
+                            String.class, // Raw tweet text
+                            KAFKA_FORMAT,
                             withPartitions(5))); // Topic config
 // end-snippet
     // formatting:on

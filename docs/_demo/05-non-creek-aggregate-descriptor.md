@@ -42,9 +42,9 @@ This descriptor should ideally be managed by the team that owns that system.
 {: .notice--info}
 
 Replace the `TweetHandleUsageStream` constant in the new `IngestionAggregateDescriptor` class with
-a `TweetTextStream` constant, copied from the `HandleOccurrenceServiceDescriptor`.
-The `TweetTextStream` constant will need tweaking to convert it from an input to an output
-topic. Keep its existing `Long` key and JSON `TweetData` value:
+a `RawTweetStream` constant, copied from the `HandleOccurrenceServiceDescriptor`.
+The `RawTweetStream` constant will need tweaking to convert it from an input to an output
+topic. Keep its existing `Long` key and Kafka-native `String` tweet-text value:
 
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/external/IngestionAggregateDescriptor.java %}
@@ -69,7 +69,7 @@ aggregate descriptor.
 There are now two definitions of the same topic: one in the aggregate descriptor and one in the service descriptor.
 This code duplication is to be avoided.
 
-Update the `TweetTextStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
+Update the `RawTweetStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
 
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/HandleOccurrenceServiceDescriptor.java %}
@@ -86,10 +86,9 @@ of the topic has conceptually moved to the `ingestion-aggregate`.
 
 Referencing the aggregate's topic descriptor, defines in code, that the service is consuming the aggregate's output.
 
-**Note:** Both `twitter.tweet.text` and `twitter.handle.usage` have JSON-schema-validated values.
-Their schemas follow topic ownership. Converting an _owned_ output topic to an _unowned_
-input, as done here, therefore also converts its JSON schema from _owned_ to _unowned_: the schema remains
-owned and managed by the aggregate that originally declared the topic, never by a service merely consuming it.
+**Note:** The input topic uses Kafka-native serialization and has no JSON schema.
+The `twitter.handle.usage` output has a JSON-schema-validated value; its schema follows the
+ownership of that topic, which is part of this aggregate's API.
 {: .notice--info}
 
 ## Testing the changes
@@ -179,15 +178,15 @@ To test the descriptor is now discoverable by the system tests, and the rest of 
 ./gradlew
 ```
 
-The build should now be green. Keep the inherited JSON input/output records and YAML fixtures;
-the unit test's permissive schema-store mock from the previous step also handles the
-upstream-owned `TweetData` input schema.
+The build should now be green. Keep the inherited raw tweet-text input and JSON handle-usage
+output fixtures. The unit test's schema-store mock from the previous step handles the
+aggregate-owned `HandleUsage` output schema.
 
 **Note:** The aggregate's API already includes a JSON-schema-validated topic value, and the `system-tests` module
 installs the `creek-kafka-json-serde` module as a [system-test extension][sysTestGradle], via
 `systemTestExtension("org.creekservice:creek-kafka-json-serde:$creekVersion")` in `system-tests/build.gradle.kts`.
 This is enough, on its own, to cause a Schema Registry container to be started automatically when the system
-tests run, and for the inherited `HandleUsage` and `TweetData` JSON schemas to be registered before any service under test
+tests run, and for the `HandleUsage` JSON schema to be registered before any service under test
 starts. No further configuration is required.
 {: .notice--info}
 
