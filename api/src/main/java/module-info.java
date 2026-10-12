@@ -17,6 +17,7 @@ module ks.aggregate.api.demo.api {
 
     // begin-snippet: model-open
     opens io.github.creek.service.ks.aggregate.api.demo.api.model;
+
     // end-snippet
 
     provides ComponentDescriptor with
