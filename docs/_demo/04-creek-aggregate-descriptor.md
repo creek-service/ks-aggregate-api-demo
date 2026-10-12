@@ -24,7 +24,7 @@ including its inputs and outputs.
 
 The [aggregate template](/aggregate-template/) repository, used to bootstrap a new repository during the
 [Basic Kafka Streams tutorial](/basic-kafka-streams-demo/), provides an empty aggregate descriptor. 
-So far, this descriptor has been left untouched by the quick-start tutorial series. 
+So far, this descriptor has been left untouched by the quick-start tutorial series.
 The aggregate descriptor can be found in the `api` module.
 
 **Note:** To avoid descriptor name clashes, the name of the aggregate descriptor is derived from the aggregate name, 
@@ -41,14 +41,14 @@ Locate the aggregate's descriptor: this is a class named `<something>AggregateDe
 It's exact name will depend on the name you gave the repository in the latest step.
 
 Locate the `handle-occurrence-service`'s descriptor: declared in the `HandleOccurrenceServiceDescriptor` 
-class, within the `services` module. Move it's `TweetHandleUsageStream` declaration into the aggregate descriptor. 
+class, within the `services` module. Move it's `TweetHandleUsageStream` declaration into the aggregate descriptor.
 It should look something like the following (aggregate descriptor name may vary):
 
 {% highlight java %}
 {% include_snippet all from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/KsAggregateApiDemoAggregateDescriptor.java %}
 {% endhighlight %}
 
-This adds an `TweetHandleUsageStream` output topic to the aggregate's descriptor and includes the topic in the list returned from the `outputs()` method. 
+This adds an `TweetHandleUsageStream` output topic to the aggregate's descriptor and includes the topic in the list returned from the `outputs()` method.
 
 To make this compile, you will also need to move the `HandleUsage` class into the `api` module,
 in a `model` sub-package under the package holding the aggregate's descriptor. Update its package declaration
@@ -65,7 +65,7 @@ Jackson to access it at runtime:
 
 ## Update the service descriptor
 
-With the one `TweetHandleUsageStream` now defined in the aggregate descriptor, 
+With the one `TweetHandleUsageStream` now defined in the aggregate descriptor,
 update the `TweetHandleUsageStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
  
 {% highlight java %}

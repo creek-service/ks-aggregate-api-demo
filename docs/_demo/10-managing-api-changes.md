@@ -38,7 +38,7 @@ has the potential to, and therefore should be _carefully_ thought through and te
 
 This tutorial's `twitter.handle.usage` topic uses a JSON schema validated value, generated from the
 `HandleUsage` record in the `api` module and registered with a Confluent-compatible Schema Registry.
-See the [JSON schema format][jsonSchemaFormat] section of the `creek-kafka` docs, and 
+See the [JSON schema format][jsonSchemaFormat] section of the `creek-kafka` docs, and
 the [JSON Schema blog post series](https://www.creekservice.org/articles/2024/01/08/json-schema-evolution-part-1.html),
 for more on how Creek validates and evolves JSON payloads.
 

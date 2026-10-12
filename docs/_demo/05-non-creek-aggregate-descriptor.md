@@ -31,7 +31,7 @@ This allows Creek based components to easily reference that metadata.
 ## Define a non-Creek aggregate API
 
 To define an aggregate descriptor for a non-Creek system, copy and rename the existing 
-`KsAggregateApiDemoAggregateDescriptor` class from the `api` module into the existing `services` module. 
+`KsAggregateApiDemoAggregateDescriptor` class from the `api` module into the existing `services` module.
 The new class should be called `IngestionAggregateDescriptor` and should be created in the 
 `io.github.creek.service.ks.aggregate.api.demo.services.external` package.
 
@@ -43,7 +43,7 @@ This descriptor should ideally be managed by the team that owns that system.
 
 In the new `IngestionAggregateDescriptor` class:
 1. Remove the `TweetHandleUsageStream` constant and its usage
-2. Convert `RawTweetStream` from an owned input to an owned output, and return it the `outputs()` method. 
+2. Convert `RawTweetStream` from an owned input to an owned output, and return it the `outputs()` method.
 
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/external/IngestionAggregateDescriptor.java %}
