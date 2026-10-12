@@ -4,14 +4,11 @@ import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicConfig
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.KAFKA_FORMAT;
 import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescriptors.outputTopic;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.creekservice.api.kafka.metadata.topic.OwnedKafkaTopicOutput;
 import org.creekservice.api.platform.metadata.AggregateDescriptor;
-import org.creekservice.api.platform.metadata.ComponentInput;
 import org.creekservice.api.platform.metadata.ComponentOutput;
-import org.creekservice.api.platform.metadata.OwnedResource;
 
 // begin-snippet: class-name
 // Aggregate descriptor for the upstream ingestion aggregate.

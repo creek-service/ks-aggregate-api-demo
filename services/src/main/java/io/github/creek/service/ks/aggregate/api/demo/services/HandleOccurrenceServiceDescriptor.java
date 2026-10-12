@@ -19,7 +19,6 @@ package io.github.creek.service.ks.aggregate.api.demo.services;
 import io.github.creek.service.ks.aggregate.api.demo.api.KsAggregateApiDemoAggregateDescriptor;
 import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
 import io.github.creek.service.ks.aggregate.api.demo.services.external.IngestionAggregateDescriptor;
-
 import java.util.Collection;
 import java.util.List;
 import org.creekservice.api.kafka.metadata.topic.KafkaTopicInput;
