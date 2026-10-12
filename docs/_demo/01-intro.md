@@ -58,7 +58,8 @@ The design changes covered by this tutorial fall into two main tasks:
 
 The first task is to define the public API of the tutorial's own aggregate. 
 The existing `handle-occurrence-service` will see its `twitter.handle.usage` output topic promoted to being part of the aggregating public API.
-The topic will be conceptually _owned_ by the aggregate.
+The topic will be conceptually _owned_ by the aggregate. Its existing schema-validated JSON
+`HandleUsage` value gives consumers of the aggregate's API a documented, enforced contract for the data.
 
 The second task is to define the public API of the `ingestion aggregate`. 
 As noted above, this aggregate doesn't use Creek. 
@@ -86,4 +87,3 @@ The completed tutorial can be viewed [on GitHub <i class="fas fa-external-link-a
 [creekApi]: {{ "/creek-aggregate-descriptor" | relative_url }}
 [nonCreekApi]: {{ "/non-creek-aggregate-descriptor" | relative_url }}
 [whyAggregates]: {{ "/why-aggregates" | relative_url }}
-[FurtherReadingStep]: {{ "/further-reading" | relative_url }}

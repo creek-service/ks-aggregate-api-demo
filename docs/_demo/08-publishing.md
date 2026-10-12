@@ -7,11 +7,11 @@ snippet_comment_prefix: "//"
 ---
 
 The aggregate's API is the set of resources, topics in this case, that the aggregate is exposing to the rest of
-the organisation. Serves in other aggregates can access the resource metadata via the aggregate descriptor. 
+the organisation. Services in other aggregates can access the resource metadata via the aggregate descriptor.
 To enable this, the api needs to be published somewhere!
 
 **Note:** The `IngestionAggregateDescriptor` added to the `services` module should _not_ be published.
-The `servies` jar should be private to the repository. If the ingestion aggregate is accessed by more than one Creek
+The `services` jar should be private to the repository. If the ingestion aggregate is accessed by more than one Creek
 aggregate, then the `IngestionAggregateDescriptor` should be declared in a shared location and packaged in its own
 jar file.
 {: .notice--warning}
@@ -28,7 +28,7 @@ to publish the `api` module to [GitHub packages][ghPackages], which provides a [
 Publishing is configured in the `buildSrc/src/main/kotlin/publishing-convention.gradle.kts` file. 
 You'll notice a `ChangeMe` comment in there, encouraging users to think about where their `api` jar should be published.
 
-{% highlight java %}
+{% highlight kotlin %}
 {% include_snippet gh-packages from ../buildSrc/src/main/kotlin/publishing-convention.gradle.kts %}
 {% endhighlight %}
 

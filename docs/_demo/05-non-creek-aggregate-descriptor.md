@@ -31,9 +31,9 @@ This allows Creek based components to easily reference that metadata.
 ## Define a non-Creek aggregate API
 
 To define an aggregate descriptor for a non-Creek system, copy and rename the existing 
-`OccurrenceAggregateDescriptor` class from the `api` module into the existing `services` module. 
+`KsAggregateApiDemoAggregateDescriptor` class from the `api` module into the existing `services` module.
 The new class should be called `IngestionAggregateDescriptor` and should be created in the 
-`io.github.creek.service.basic.kafka.streams.demo.services.external` package.
+`io.github.creek.service.ks.aggregate.api.demo.services.external` package.
 
 **ProTip:** The aggregate descriptor of non-Creek system can live in the `services` of an aggregate.
 However, if multiple aggregates interact with the same system, it is often cleaner to define the system's 
@@ -41,9 +41,9 @@ aggregate descriptor, once, in a shared location, e.g. it's own jar file.
 This descriptor should ideally be managed by the team that owns that system.
 {: .notice--info}
 
-Replace the `TweetHandleUsageStream` constant in the new `IngestionAggregateDescriptor` class with
-a `TweetTextStream` constant, copied from the `HandleOccurrenceServiceDescriptor`.
-The `TweetTextStream` constant will need tweaking to convert it from an input to an output topic:
+In the new `IngestionAggregateDescriptor` class:
+1. Remove the `TweetHandleUsageStream` constant and its usage
+2. Convert `RawTweetStream` from an owned input to an owned output, and return it the `outputs()` method.
 
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/external/IngestionAggregateDescriptor.java %}
@@ -68,7 +68,7 @@ aggregate descriptor.
 There are now two definitions of the same topic: one in the aggregate descriptor and one in the service descriptor.
 This code duplication is to be avoided.
 
-Update the `TweetTextStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
+Update the `RawTweetStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
 
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/HandleOccurrenceServiceDescriptor.java %}
@@ -84,6 +84,11 @@ Note how the _type_ of the topic descriptor has changed from an _owned_ input to
 of the topic has conceptually moved to the `ingestion-aggregate`.
 
 Referencing the aggregate's topic descriptor, defines in code, that the service is consuming the aggregate's output.
+
+**Note:** The input topic uses Kafka-native serialization and has no JSON schema.
+The `twitter.handle.usage` output has a JSON-schema-validated value; its schema follows the
+ownership of that topic, which is part of this aggregate's API.
+{: .notice--info}
 
 ## Testing the changes
 
@@ -172,17 +177,23 @@ To test the descriptor is now discoverable by the system tests, and the rest of 
 ./gradlew
 ```
 
-The build should now be green!
+The build should now be green. Keep the inherited raw tweet-text input and JSON handle-usage
+output fixtures. The unit test's schema-store mock from the previous step handles the
+aggregate-owned `HandleUsage` output schema.
+
+**Note:** The aggregate's API already includes a JSON-schema-validated topic value, and the `system-tests` module
+installs the `creek-kafka-json-serde` module as a [system-test extension][sysTestGradle], via
+`systemTestExtension("org.creekservice:creek-kafka-json-serde:$creekVersion")` in `system-tests/build.gradle.kts`.
+This is enough, on its own, to cause a Schema Registry container to be started automatically when the system
+tests run, and for the `HandleUsage` JSON schema to be registered before any service under test
+starts. No further configuration is required.
+{: .notice--info}
 
 This concludes the coding for the tutorial.
 
-[bcDDD]: https://martinfowler.com/bliki/BoundedContext.html
 [beyondKafka]: https://github.com/creek-service/creek-service/issues/18
 [beyondJava]: https://github.com/creek-service/creek-service/issues/17
 [creekStory]: https://www.creekservice.org/about/#creek-story
 [serviceLoader]: https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/ServiceLoader.html
-[ksExt]: https://www.creekservice.org/creek-kafka
 [sysTestGradle]: https://github.com/creek-service/creek-system-test-gradle-plugin
 [aggTemp]: {{ site.url | append: "/aggregate-template/" }}
-[todo]: switch about links to proper creekservice.org links once each repo publishes docs.
-

@@ -24,13 +24,13 @@ including its inputs and outputs.
 
 The [aggregate template](/aggregate-template/) repository, used to bootstrap a new repository during the
 [Basic Kafka Streams tutorial](/basic-kafka-streams-demo/), provides an empty aggregate descriptor. 
-So far, this descriptor has been left untouched by quick-start tutorial series. 
+So far, this descriptor has been left untouched by the quick-start tutorial series.
 The aggregate descriptor can be found in the `api` module.
 
 **Note:** To avoid descriptor name clashes, the name of the aggregate descriptor is derived from the aggregate name, 
 i.e. the repository name. <br><br>
 For example, a repository named `basic-kafka-streams-demo` would contain an aggregate descriptor named `BasicKafkaStreamsDemoAggregateDescriptor`.
-Whereas, in a repository named `ks-aggregate-api-demo` would contain a `KsAggregateApiDemoAggregateDescriptor`.
+Whereas, a repository named `ks-aggregate-api-demo` would contain a `KsAggregateApiDemoAggregateDescriptor`.
 {: .notice--warning}
 
 The steps below define the API of the tutorial's aggregate: 
@@ -38,33 +38,35 @@ The steps below define the API of the tutorial's aggregate:
 ## Define a Creek aggregate API
 
 Locate the aggregate's descriptor: this is a class named `<something>AggregateDescriptor` in the `api` module.
-
-To keep things consistent, rename the class to `OccurrenceAggregateDescriptor`. This should help avoid confusion 
-later due to potentially different class names. 
+It's exact name will depend on the name you gave the repository in the latest step.
 
 Locate the `handle-occurrence-service`'s descriptor: declared in the `HandleOccurrenceServiceDescriptor` 
-class, within the `services` module. Copy it's `TweetHandleUsageStream` declaration into  `OccurrenceAggregateDescriptor`. 
-It should look like the following:
+class, within the `services` module. Move it's `TweetHandleUsageStream` declaration into the aggregate descriptor.
+It should look something like the following (aggregate descriptor name may vary):
 
 {% highlight java %}
-{% include_snippet class-name from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/OccurrenceAggregateDescriptor.java %}
-
-    ...
-
-{% include_snippet topic-resources from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/OccurrenceAggregateDescriptor.java %}
-
-    ...
-}
+{% include_snippet all from ../api/src/main/java/io/github/creek/service/ks/aggregate/api/demo/api/KsAggregateApiDemoAggregateDescriptor.java %}
 {% endhighlight %}
 
-This adds an output topic and `register`s it with the descriptor. 
+This adds an `TweetHandleUsageStream` output topic to the aggregate's descriptor and includes the topic in the list returned from the `outputs()` method.
+
+To make this compile, you will also need to move the `HandleUsage` class into the `api` module,
+in a `model` sub-package under the package holding the aggregate's descriptor. Update its package declaration
+and any imports that refer to it.
+
+In `module-info.java`, move the model package's `exports` and `opens` declarations from `services` to `api`,
+using the new package name. The export makes `HandleUsage` available to other modules; the open allows
+Jackson to access it at runtime:
+
+{% highlight java %}
+{% include_snippet model-export from ../api/src/main/java/module-info.java %}
+{% include_snippet model-open from ../api/src/main/java/module-info.java %}
+{% endhighlight %}
 
 ## Update the service descriptor
 
-There are now two definitions of the same topic: one in the aggregate descriptor and one in the service descriptor.
-This code duplication is to be avoided.
-
-Update the `TweetHandleUsageStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
+With the one `TweetHandleUsageStream` now defined in the aggregate descriptor,
+update the `TweetHandleUsageStream` declaration in the `HandleOccurrenceServiceDescriptor` class to use the aggregate's topic declaration:
  
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/HandleOccurrenceServiceDescriptor.java %}
@@ -77,6 +79,18 @@ Update the `TweetHandleUsageStream` declaration in the `HandleOccurrenceServiceD
 {% endhighlight %}
 
 Referencing the aggregate's topic descriptor, defines in code, that the service's output topic is part of the aggregate's api.
+
+Because the topology unit test initializes only the service descriptor, it cannot register schemas
+owned by an aggregate descriptor. In `TopologyBuilderTest.classSetup`, replace
+`.with(JsonSerdeExtensionOptions.testBuilder().build())` with:
+
+{% highlight java %}
+{% include_snippet json-serde-test-options from ../handle-occurrence-service/src/test/java/io/github/creek/service/ks/aggregate/api/demo/handle/occurrence/service/kafka/streams/TopologyBuilderTest.java %}
+{% endhighlight %}
+
+Import `JsonSchemaStoreClient`, `MockJsonSchemaStoreClient`, `SchemaStoreEndpoints`, and
+`MockEndpointsLoader`. The permissive mock allows the isolated unit test to resolve
+aggregate-owned schemas without a real Schema Registry. Leave the output payload contract unchanged.
 
 ## Testing the changes
 
@@ -99,7 +113,7 @@ The `dependencies` block looks like the following:
 {% endhighlight %}
 
 The module has a single direct production dependency: the `creek-kafka-metadata` that contains the topic descriptor and config types
-used within the aggregate's descriptor.
+used within the aggregate's descriptor.  The other annotation dependencies are compile-only dependencies.
 
 As the API module is shared code, as the comment states, it is _strongly_ advised to avoid adding production dependencies
 to this module, other than other _metadata_ jars for specific Creek extensions.
@@ -117,7 +131,4 @@ There's nothing worst that not being able to patch a production issue due to a d
 [ksExt]: https://www.creekservice.org/creek-kafka
 [dataMeshDef]: https://data.world/blog/what-is-data-mesh/
 [dataProductDef]: https://data.world/blog/what-is-a-data-product-and-why-does-it-matter-to-data-mesh/
-[aggDescriptor]: https://www.creekservice.org/docs/descriptors/#aggregate-descriptor
-[serviceDescriptors]: https://www.creekservice.org/docs/descriptors/#service-descriptor
 [depHell]: https://en.wikipedia.org/wiki/Dependency_hell
-[sysTestStep]: {{ "/system-testing" | relative_url }}

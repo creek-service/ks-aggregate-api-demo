@@ -9,11 +9,11 @@ import org.creekservice.api.platform.metadata.ComponentDescriptor;
 import org.creekservice.api.platform.metadata.ComponentDescriptors;
 import org.junit.jupiter.api.Test;
 
-class OccurrenceAggregateDescriptorTest {
+class KsAggregateApiDemoAggregateDescriptorTest {
 
     @Test
     void shouldLoadDescriptor() {
         final List<ComponentDescriptor> loaded = ComponentDescriptors.load();
-        assertThat(loaded, hasItem(instanceOf(OccurrenceAggregateDescriptor.class)));
+        assertThat(loaded, hasItem(instanceOf(KsAggregateApiDemoAggregateDescriptor.class)));
     }
 }
