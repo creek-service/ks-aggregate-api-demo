@@ -37,7 +37,6 @@ subprojects {
     val junitVersion = property("junitVersion") as String
 
     dependencies {
-        implementation(platform("com.fasterxml.jackson:jackson-bom:${property("jacksonVersion")}"))
         compileOnly("com.github.spotbugs:spotbugs-annotations:${property("spotBugsVersion")}")
         testImplementation("org.creekservice:creek-test-hamcrest:$creekVersion")
         testImplementation("org.creekservice:creek-test-util:$creekVersion")

@@ -23,56 +23,29 @@ import static io.github.creek.service.ks.aggregate.api.demo.internal.TopicDescri
 
 import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.creekservice.api.kafka.metadata.topic.OwnedKafkaTopicOutput;
 import org.creekservice.api.platform.metadata.AggregateDescriptor;
-import org.creekservice.api.platform.metadata.ComponentInput;
 import org.creekservice.api.platform.metadata.ComponentOutput;
-import org.creekservice.api.platform.metadata.OwnedResource;
 
-// begin-snippet: class-name
-public final class OccurrenceAggregateDescriptor implements AggregateDescriptor {
-    // end-snippet
-    private static final List<ComponentInput> INPUTS = new ArrayList<>();
-    private static final List<ComponentOutput> OUTPUTS = new ArrayList<>();
+// begin-snippet: all
+public final class KsAggregateApiDemoAggregateDescriptor implements AggregateDescriptor {
 
-    // formatting:off
-// begin-snippet: topic-resources
     public static final OwnedKafkaTopicOutput<String, HandleUsage> TweetHandleUsageStream =
-            register(outputTopic(
+            outputTopic(
                     "twitter.handle.usage",
                     String.class, // Twitter handle
                     KAFKA_FORMAT,
-                    HandleUsage.class,  // Usage count, JSON schema validated
+                    HandleUsage.class, // Usage count, JSON schema validated
                     JSON_FORMAT,
-                    withPartitions(6)
-                            .withRetentionTime(Duration.ofHours(12))
-            ));
-// end-snippet
-    // formatting:on
+                    withPartitions(6).withRetentionTime(Duration.ofHours(12)));
 
-    public OccurrenceAggregateDescriptor() {}
-
-    @Override
-    public Collection<ComponentInput> inputs() {
-        return List.copyOf(INPUTS);
-    }
+    public KsAggregateApiDemoAggregateDescriptor() {}
 
     @Override
     public Collection<ComponentOutput> outputs() {
-        return List.copyOf(OUTPUTS);
-    }
-
-    // Uncomment if needed
-    // private static <T extends ComponentInput & OwnedResource> T register(final T input) {
-    //     INPUTS.add(input);
-    //     return input;
-    // }
-
-    private static <T extends ComponentOutput & OwnedResource> T register(final T output) {
-        OUTPUTS.add(output);
-        return output;
+        return List.of(TweetHandleUsageStream);
     }
 }
+// end-snippet

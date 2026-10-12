@@ -16,13 +16,6 @@ Additional tutorials will be added over time. These can be found on the [tutoria
 If you're ready to jump in and start using Creek, then we'd suggest you head on over a read the documentation on the
 [aggregate template][aggTemp] next and then get building.
 
-This tutorial's aggregate publishes a schema validated JSON payload, via the `twitter.handle.usage`
-topic's `HandleUsage` value, registered with a Confluent-compatible Schema Registry. See the
-[JSON schema format <i class="fas fa-external-link-alt"></i>][jsonSchemaFormat]{:target="_blank"}
-section of the `creek-kafka` docs for more details on how Creek validates and evolves JSON payloads.
-{: .notice--info}
-
 [basicKsDemo]: https://www.creekservice.org/basic-kafka-streams-demo/
 [ksConnectSvsDemo]:  https://www.creekservice.org/ks-connected-services-demo/
 [aggTemp]: {{ site.url | append: "/aggregate-template/" }}
-[jsonSchemaFormat]: https://www.creekservice.org/creek-kafka/#json-schema-format

@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-io.github.creek.service.ks.aggregate.api.demo.api.OccurrenceAggregateDescriptor
+io.github.creek.service.ks.aggregate.api.demo.api.KsAggregateApiDemoAggregateDescriptor

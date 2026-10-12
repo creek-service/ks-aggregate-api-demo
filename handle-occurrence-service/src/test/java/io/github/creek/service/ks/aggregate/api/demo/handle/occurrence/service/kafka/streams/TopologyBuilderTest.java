@@ -24,13 +24,11 @@ import static io.github.creek.service.ks.aggregate.api.demo.services.HandleOccur
 import static org.creekservice.api.kafka.metadata.topic.KafkaTopicDescriptor.DEFAULT_CLUSTER_NAME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-// begin-snippet: includes
 import static org.apache.kafka.streams.KeyValue.pair;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
-// end-snippet
 import io.github.creek.service.ks.aggregate.api.demo.api.model.HandleUsage;
 import io.github.creek.service.ks.aggregate.api.demo.services.HandleOccurrenceServiceDescriptor;
 import java.nio.file.Path;
@@ -52,9 +50,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 // formatting:on
 
-// begin-snippet: class-declaration
 class TopologyBuilderTest {
-    // end-snippet
 
     private static final Path EXPECTED_TOPOLOGY_PATH =
             TestPaths.moduleRoot("handle-occurrence-service")
@@ -65,10 +61,8 @@ class TopologyBuilderTest {
     private TopologyTestDriver testDriver;
     private Topology topology;
     // formatting:off
-// begin-snippet: topic-declarations
     private TestInputTopic<Long, String> rawTweetStream;
     private TestOutputTopic<String, HandleUsage> handleUsageStream;
-// end-snippet
     // formatting:on
 
     @BeforeAll
@@ -94,7 +88,6 @@ class TopologyBuilderTest {
     }
 
     // formatting:off
-// begin-snippet: setUp
     @BeforeEach
     public void setUp() {
         final KafkaStreamsExtension ext = ctx.extension(KafkaStreamsExtension.class);
@@ -109,7 +102,6 @@ class TopologyBuilderTest {
         rawTweetStream = inputTopic(RawTweetStream, ext, testDriver);
         handleUsageStream = outputTopic(TweetHandleUsageStream, ext, testDriver);
     }
-// end-snippet
     // formatting:on
 
     @AfterEach
@@ -118,7 +110,6 @@ class TopologyBuilderTest {
     }
 
     // formatting:off
-// begin-snippet: unit-test
     @Test
     void shouldOutputHandleOccurrences() {
         // When:
@@ -132,7 +123,6 @@ class TopologyBuilderTest {
                 pair("@BillyM2k", new HandleUsage("@BillyM2k", 1))
         ));
     }
-// end-snippet
     // formatting:on
 
     /**

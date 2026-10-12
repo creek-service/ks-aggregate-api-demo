@@ -39,7 +39,6 @@ Otherwise, follow the steps below to create your own copy of the completed tutor
 
 The repository is now ready for the aggregate descriptor to be defined, which will be covered in the next step.
 
-[tempOnGH]: https://github.com/creek-service/basic-kafka-streams-demo
 [tempNew]: https://github.com/creek-service/basic-kafka-streams-demo/generate
 [bootstrapWorkflow]: https://github.com/creek-service/basic-kafka-streams-demo/blob/main/.github/workflows/bootstrap.yml
 [cloneRepo]: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository

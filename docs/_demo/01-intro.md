@@ -41,8 +41,6 @@ The key features this tutorial is designed to highlight are:
   If you wish to jump straight to this, see the [Creek aggregate API][creekApi] section.
 * How to interop with parts of the system that predate or don't use Creek.
   If you wish to jump straight to this, see the [Non-Creek aggregate API][nonCreekApi] section.
-* How to expose a schema validated JSON payload as part of an aggregate's API.
-  If you wish to jump straight to this, see the [Define the JSON payload][jsonPayload] section.
 * Why defining aggregates is a powerful architectural pattern.
   If you wish to jump straight to this, see the [Why Aggregates?][whyAggregates] section.
 
@@ -88,6 +86,4 @@ The completed tutorial can be viewed [on GitHub <i class="fas fa-external-link-a
 [bcDDD]: https://martinfowler.com/bliki/BoundedContext.html
 [creekApi]: {{ "/creek-aggregate-descriptor" | relative_url }}
 [nonCreekApi]: {{ "/non-creek-aggregate-descriptor" | relative_url }}
-[jsonPayload]: {{ "/creek-aggregate-descriptor#define-the-json-payload" | relative_url }}
 [whyAggregates]: {{ "/why-aggregates" | relative_url }}
-[FurtherReadingStep]: {{ "/further-reading" | relative_url }}

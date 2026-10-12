@@ -31,7 +31,7 @@ This allows Creek based components to easily reference that metadata.
 ## Define a non-Creek aggregate API
 
 To define an aggregate descriptor for a non-Creek system, copy and rename the existing 
-`OccurrenceAggregateDescriptor` class from the `api` module into the existing `services` module. 
+`KsAggregateApiDemoAggregateDescriptor` class from the `api` module into the existing `services` module. 
 The new class should be called `IngestionAggregateDescriptor` and should be created in the 
 `io.github.creek.service.ks.aggregate.api.demo.services.external` package.
 
@@ -41,10 +41,9 @@ aggregate descriptor, once, in a shared location, e.g. it's own jar file.
 This descriptor should ideally be managed by the team that owns that system.
 {: .notice--info}
 
-Replace the `TweetHandleUsageStream` constant in the new `IngestionAggregateDescriptor` class with
-a `RawTweetStream` constant, copied from the `HandleOccurrenceServiceDescriptor`.
-The `RawTweetStream` constant will need tweaking to convert it from an input to an output
-topic. Keep its existing `Long` key and Kafka-native `String` tweet-text value:
+In the new `IngestionAggregateDescriptor` class:
+1. Remove the `TweetHandleUsageStream` constant and its usage
+2. Convert `RawTweetStream` from an owned input to an owned output, and return it the `outputs()` method. 
 
 {% highlight java %}
 {% include_snippet class-name from ../services/src/main/java/io/github/creek/service/ks/aggregate/api/demo/services/external/IngestionAggregateDescriptor.java %}
@@ -192,12 +191,9 @@ starts. No further configuration is required.
 
 This concludes the coding for the tutorial.
 
-[bcDDD]: https://martinfowler.com/bliki/BoundedContext.html
 [beyondKafka]: https://github.com/creek-service/creek-service/issues/18
 [beyondJava]: https://github.com/creek-service/creek-service/issues/17
 [creekStory]: https://www.creekservice.org/about/#creek-story
 [serviceLoader]: https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/ServiceLoader.html
-[ksExt]: https://www.creekservice.org/creek-kafka
 [sysTestGradle]: https://github.com/creek-service/creek-system-test-gradle-plugin
 [aggTemp]: {{ site.url | append: "/aggregate-template/" }}
-[todo]: switch about links to proper creekservice.org links once each repo publishes docs.

@@ -18,44 +18,24 @@ import org.creekservice.api.platform.metadata.OwnedResource;
 public final class IngestionAggregateDescriptor implements AggregateDescriptor {
     // end-snippet
 
-    private static final List<ComponentInput> INPUTS = new ArrayList<>();
-    private static final List<ComponentOutput> OUTPUTS = new ArrayList<>();
-
     // formatting:off
 // begin-snippet: topic-resources
     // Define the tweet-text output topic, conceptually owned by this aggregate:
     public static final OwnedKafkaTopicOutput<Long, String> RawTweetStream =
-            register(
-                    outputTopic(
-                            "twitter.tweet.text", // Topic name
-                            Long.class, // Topic key type (Tweet id)
-                            KAFKA_FORMAT,
-                            String.class, // Raw tweet text
-                            KAFKA_FORMAT,
-                            withPartitions(5))); // Topic config
+            outputTopic(
+                    "twitter.tweet.text", // Topic name
+                    Long.class, // Topic key type (Tweet id)
+                    KAFKA_FORMAT,
+                    String.class, // Raw tweet text
+                    KAFKA_FORMAT,
+                    withPartitions(5)); // Topic config
 // end-snippet
     // formatting:on
 
     public IngestionAggregateDescriptor() {}
 
     @Override
-    public Collection<ComponentInput> inputs() {
-        return List.copyOf(INPUTS);
-    }
-
-    @Override
     public Collection<ComponentOutput> outputs() {
-        return List.copyOf(OUTPUTS);
-    }
-
-    // Uncomment if needed
-    // private static <T extends ComponentInput & OwnedResource> T register(final T input) {
-    //     INPUTS.add(input);
-    //     return input;
-    // }
-
-    private static <T extends ComponentOutput & OwnedResource> T register(final T output) {
-        OUTPUTS.add(output);
-        return output;
+        return List.of(RawTweetStream);
     }
 }

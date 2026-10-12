@@ -7,6 +7,9 @@ module ks.aggregate.api.demo.services {
     // end-snippet
 
     requires transitive ks.aggregate.api.demo.api;
+    requires static creek.base.annotation;
+    requires static com.fasterxml.jackson.annotation;
+    requires static io.swagger.v3.oas.annotations;
 
     exports io.github.creek.service.ks.aggregate.api.demo.services;
 
