@@ -16,8 +16,3 @@ dependencies {
     testImplementation("org.apache.kafka:kafka-clients:${property("kafkaVersion")}")
 }
 // end-snippet
-
-creek.schema.json {
-    typeScanning.moduleWhiteList(moduleName)
-    subTypeScanning.moduleWhiteList(moduleName)
-}
